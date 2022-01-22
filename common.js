@@ -246,6 +246,7 @@ const DATE = {
         let msDiff = edDt.getTime() - stDt.getTime();
 
         return msDiff / (1000*60*60*24);
+        
     }
 }
 
