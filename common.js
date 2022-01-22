@@ -246,7 +246,23 @@ const DATE = {
         let msDiff = edDt.getTime() - stDt.getTime();
 
         return msDiff / (1000*60*60*24);
+    },
+    // 밀리세컨드 -> 날짜로 변환
+    ms2Date : function(ms, str) {
+        str = COMM.null2Void(str);
+        let resultStr = "";
+        let now = new Date(ms)
+        let year = now.getFullYear().toString();
+        let month = (now.getMonth() + 1).toString();
+        let date = now.getDate().toString();
         
+        if(month.length === 1) {
+            month = "0" + month;
+        }
+
+        resultStr = year + str + month + str + date;
+
+        return resultStr
     }
 }
 
