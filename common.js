@@ -3,7 +3,6 @@
  * @author : coding-orca
  * All copyright reserved by https://github.com/kokomai
  */
-
 const COMM = {
     // 개발서버 주소 (default = localhost)
     devUrl : "localhost",
@@ -266,4 +265,9 @@ const DATE = {
     }
 }
 
-export { COMM, FORM, DATE }
+// export { COMM, FORM, DATE }
+
+
+// test 영역 .. live server 라는 확장 프로그램 필요
+let d = new Date().getTime();
+console.log(DATE.ms2Date(d));
