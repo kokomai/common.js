@@ -69,7 +69,9 @@ const REQ = {
         // access 토큰 먼저
         return new Promise((resolve, reject) => {
                 $.ajax({
-                url: "https://jsonplaceholder.typicode.com/photos"
+                url : "/accTokn"
+                // 아래는 테스트용
+                // url: "https://jsonplaceholder.typicode.com/photos"
                 , data: REQ.getAToken()
                 , data: {}
                 , type: "GET"
@@ -81,10 +83,13 @@ const REQ = {
                     resolve(res);
                 }
                 , error: function(res) {
+                    // TODO : access 토큰 만료 code 값은 프로젝트 별로 다름
                     if(res.code === "9999") {
                         // access 토큰 만료시, refresh 토큰 요청
                         $.ajax({
-                            url: "https://jsonplaceholder.typicode.com/photos"
+                            url : "/refTokn"
+                            // 아래는 테스트용
+                            // url: "https://jsonplaceholder.typicode.com/photos"
                             , data: REQ.getRToken()
                             , data : {}
                             , type: "GET"
