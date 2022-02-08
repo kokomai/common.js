@@ -59,6 +59,11 @@ const COMM = {
     // dest : 바뀐 후의 문자
     replaceAll : function(str, org, dest) {
         return str.split(org).join(dest);
+    },
+    // 이전 페이지에서 보낸 데이터 가져오기
+    // 설정하는 것은 request.js 내의 REQ.location을 사용
+    getPageData : function() {
+        return JSON.parse(sessionStorage.getItem("pageData"));
     }
 }
 
