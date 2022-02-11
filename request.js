@@ -149,6 +149,7 @@
 		}
 	*/
     post : function(options) {
+        COMM.loading();
         try {
             return new Promise((resolve, reject) => {
                let url = "";
