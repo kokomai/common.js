@@ -3,9 +3,11 @@
  * @author : coding-orca
  * All copyright reserved by https://github.com/kokomai
  */
-const COMM = {
+ const COMM = {
     // 개발서버 주소 (default = localhost)
     devUrl : "localhost",
+	// 페이지 이동시 계속 로딩 여부
+	isKeepLoading : false,
     // 개발서버, 로컬인지 체크
     isDevMode : function() {
         if(window.location.href.indexOf("localhost") === -1
@@ -45,8 +47,8 @@ const COMM = {
         || obj === ""
         || (typeof obj === "object" 
             && (JSON.stringify(obj) === "{}" 
-               || JSON.stringify(obj) === "[]")
-           )
+            || JSON.stringify(obj) === "[]")
+        )
         ) {
             return false;
         } else {
@@ -61,10 +63,115 @@ const COMM = {
         return str.split(org).join(dest);
     },
     // 이전 페이지에서 보낸 데이터 가져오기
-    // 설정하는 것은 request.js 내의 REQ.location을 사용
+    // 설정하는 것은 hug-request.js 내의 REQ.location을 사용
     getPageData : function() {
         return JSON.parse(sessionStorage.getItem("pageData"));
-    }
+    },
+	// 개발자들이 전역으로 사용해야 할 휘발성 커스텀 함수 정의
+	custFn : {
+		sample: function() {
+			console.log("sample 커스텀 함수입니다. 전역으로 사용 가능합니다.");
+		}
+	},
+	// 로딩 
+	// 보여주기 : (빈값)/(true)
+	// 가려주기 : (false)
+	loading : function(isShow) {
+		if(isShow === undefined) {
+			isShow = true;
+		}
+		
+		if(isShow) {
+			document.getElementById("__loading").style.display = "block";
+		} else {
+			document.getElementById("__loading").style.display = "none";
+		}
+	},
+	// page 로딩을 계속 지속
+	// 계속 페이지 로딩 : (빈값)/(true)
+	// 페이지 로딩 가려주기 : (false) 
+	keepLoading : function(isKeep) {
+		if(isKeep === undefined || isKeep === true) {
+			COMM.isKeepLoading = true;
+		} else {
+			document.getElementById("__pageLoading").style.display = "none";	
+		}
+	},
+	// 공용 alert를 띄워줌
+	// msg : 메세지
+	// title : 타이틀
+	// callback : 버튼 클릭시 콜백
+	// btnText : 버튼 텍스트
+	alert : function(msg, title, callback, btnText) {
+		// 기존 alert / confirm 없애주기
+		document.getElementById("__confirm").style.display = "none";
+		document.getElementById("__alert").style.display = "none";
+		
+		document.querySelector("#__alert #__msg").textContent = msg;
+		
+		if(title) {
+			document.querySelector("#__alert #__title").textContent = title;	
+		}
+		
+		if(btnText) {
+			document.querySelector("#__alert #__confirmBtn").textContent = btnText;	
+		}
+		
+		document
+		.querySelector("#__alert #__confirmBtn")
+		.addEventListener("click", function() {
+			document.getElementById("__alert").style.display = "none";
+			
+			if(typeof callback === "function") {
+				callback();
+			}						
+		});
+		
+		document.getElementById("__alert").style.display = "block";
+	},
+	// 공용 confirm창을 띄워줌
+	// msg : 메세지
+	// title : 타이틀
+	// callback : 확인 버튼 클릭시 콜백
+	// confirmText : 확인 버튼 텍스트
+	// cancelText : 취소 버튼 텍스트
+	confirm : function(msg, title, callback, confirmText, cancelText) {
+		// 기존 alert / confirm 없애주기
+		document.getElementById("__confirm").style.display = "none";
+		document.getElementById("__alert").style.display = "none";
+		
+		document.querySelector("#__confirm #__msg").textContent = msg;
+		
+		if(title) {
+			document.querySelector("#__confirm #__title").textContent = title;	
+		}
+		
+		if(confirmText) {
+			document.querySelector("#__confirm #__confirmBtn").textContent = confirmText;	
+		}
+		
+		if(cancelText) {
+			document.querySelector("#__confirm #__cancelBtn").textContent = cancelText;	
+		}
+		
+		document
+		.querySelector("#__confirm #__confirmBtn")
+		.addEventListener("click", function() {
+			document.getElementById("__confirm").style.display = "none";
+									
+			if(typeof callback === "function") {
+				callback();
+			}
+		});
+		
+		document
+		.querySelector("#__confirm #__cancelBtn")
+		.addEventListener("click", function() {
+			document.getElementById("__confirm").style.display = "none";						
+		});
+		
+		document.getElementById("__confirm").style.display = "block";
+	}
 }
 
 const FORM = {
