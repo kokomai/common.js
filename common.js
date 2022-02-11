@@ -205,27 +205,33 @@ const FORM = {
     },
     // 금액을 순 한글로 변환
     money2Kor : function(num) {
+		if(typeof num === 'number') {
+			num = num.toString();
+		}
+		
         let korNum = ["","일","이","삼","사","오","육","칠","팔","구","십"]; 
-        let korUnit = ["","십","백","천","","십","백","천","","십","백","천","","십","백","천"]; 
+        let korUnit = ["","십","백","천","","십","백","천","","십","백","천","","십","백","천","","십","백","천"]; 
         let numStr = ""; 
         let tempStr = ""; 
-        let result = ""; 
-    
-        for(let i=0; i<num.length; i++) {                
+        let result = "";
+ 
+    	if(num) {
+			for(let i=0; i<num.length; i++) {                
             tempStr = ""; 
-            numStr = korNum[num.charAt(num.length-(i+1))]; 
-            if(numStr !== "") tempStr += numStr+korUnit[i]; 
-            if(i === 4) tempStr += "만"; 
-            if(i === 8) tempStr += "억"; 
-            if(i === 12) tempStr += "조";
-            if(i === 16) tempStr += "경"; 
-            
-            result = tempStr + result; 
-        }
-    
+	            numStr = korNum[num.charAt(num.length-(i+1))]; 
+	            if(numStr !== "") tempStr += numStr+korUnit[i]; 
+	            if(i === 4) tempStr += "만"; 
+	            if(i === 8) tempStr += "억"; 
+	            if(i === 12) tempStr += "조";
+	            if(i === 16) tempStr += "경"; 
+	            
+	            result = tempStr + result; 
+	        }
+	    	result = result.replace("경조억만", "경").replace("조억만", "조").replace("억만", "억");	
+		}
+
         return result; 
     },
-
 }
 
 const DATE = {
@@ -376,6 +382,7 @@ const DATE = {
         return resultStr
     }
 }
+
 
 // export { COMM, FORM, DATE }
 

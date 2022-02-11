@@ -66,32 +66,70 @@
         xhr.setRequestHeader("X-AUTH-ATOKEN", aToken);
     },
     // get ajax
-    get :  function(url, params, successF, errorF) {
+	/*
+		options : {
+			url : 요청 url
+			params : 전달할 파라미터 ({})
+			success : 성공시 호출할 콜백 함수
+			error : 에러시 호출할 콜백 함수
+			keepLoading : true 
+				-> 여러번 비동기로 호출 시 앞서 호출한 ajax가 loading을 가리지 않게 하기 
+		}
+	*/
+    get : function(options) {
+		COMM.loading();
         try {
-            return new Promise(async (resolve, reject) => {
-				COMM.loading();
-                if(typeof errorF !== "function") {
-                    errorF = function(e) {
-                        console.log(e);
-                    }
-                }
-
+            return new Promise((resolve, reject) => {
+				let url = "";
+				let params = {};
+				let successF = function(res) {
+					console.log(res);
+				};
+				let errorF = function(res) {
+					console.error(res);
+				};
+				let isHideLoading = true;
+				
+				if(typeof options === "object") {
+					if(options.url) {
+						url = options.url
+					}
+					if(options.params) {
+						params = options.params
+					}
+					if(options.success) {
+						successF = options.success
+					}
+					if(options.error) {
+						errorF = options.error
+					}
+					if(options.keepLoading) {
+						isHideLoading = !options.keepLoading
+					}
+				}
+				
                 $.ajax({
                     url: url
                     , data: params
                     , type: "GET"
-                    , async : false
+                    , async : true
                     , dataType: "JSON"
                     , beforeSend: REQ.rTokenHeader
                     , success: function(res, stat, req) {
                         successF(res, stat, req);
                         resolve(res, stat, req);
-						COMM.loading(false);
+
+						if(isHideLoading) {
+							COMM.loading(false);	
+						}
                     }
                     , error : function(res) {
                         errorF(res);
                         reject(res);
-						COMM.loading(false);
+
+						if(isHideLoading) {
+							COMM.loading(false);	
+						}
                     }
                 });
             });
@@ -100,32 +138,69 @@
         }
     },
     // post ajax
-    post : async function(url, params, successF, errorF) {
+	/*
+		options : {
+			url : 요청 url
+			params : 전달할 파라미터 ({})
+			success : 성공시 호출할 콜백 함수
+			error : 에러시 호출할 콜백 함수
+			keepLoading : true 
+				-> 여러번 비동기로 호출 시 앞서 호출한 ajax가 loading을 가리지 않게 하기 
+		}
+	*/
+    post : function(options) {
         try {
-            return new Promise(async (resolve, reject) => {
-				COMM.loading();
-                if(typeof errorF !== "function") {
-                    errorF = function(e) {
-                        console.log(e);
-                    }
-                }
-
+            return new Promise((resolve, reject) => {
+               let url = "";
+				let params = {};
+				let successF = function(res) {
+					console.log(res);
+				};
+				let errorF = function(res) {
+					console.error(res);
+				};
+				let isHideLoading = true;
+				
+				if(typeof options === "object") {
+					if(options.url) {
+						url = options.url
+					}
+					if(options.params) {
+						params = options.params
+					}
+					if(options.success) {
+						successF = options.success
+					}
+					if(options.error) {
+						errorF = options.error
+					}
+					if(options.keepLoading) {
+						isHideLoading = !options.keepLoading
+					}
+				}
+				
                 $.ajax({
                     url: url
                     , data: params
                     , type: "POST"
-                    , async : false
+                    , async : true
                     , dataType: "JSON"
                     , beforeSend: REQ.rTokenHeader
                     , success: function(res, stat, req) {
                         successF(res, stat, req);
                         resolve(res, stat, req);
-						COMM.loading(false);
+
+						if(isHideLoading) {
+							COMM.loading(false);	
+						}
                     }
                     , error : function(res) {
                         errorF(res);
                         reject(res);
-						COMM.loading(false);
+
+						if(isHideLoading) {
+							COMM.loading(false);	
+						}
                     }
                 });
             });
@@ -164,7 +239,25 @@
 	openPopup : function(file) {
 		var el = document.getElementById("__popup");
 		var path = "/popup" + file + ".html";
-		REQ.requestHtmlInclude(path, el);
+		if (path) {
+	        var xhttp = new XMLHttpRequest();
+	        xhttp.onreadystatechange = function () {
+	            if (this.readyState == 4 
+					&& this.status == 200
+					&& !this.responseURL.includes("login.view") ) {
+	                el.innerHTML = this.responseText;
+					el.style.display = "block";
+	            }
+	        };
+	
+			let rToken = REQ.getRToken();
+	    	let aToken = REQ.getAToken();
+	
+	        xhttp.open('GET', path + "?"+ parseInt(Date.now()/1000), true);
+	        xhttp.setRequestHeader("X-AUTH-RTOKEN", rToken);
+	        xhttp.setRequestHeader("X-AUTH-ATOKEN", aToken);
+	        xhttp.send();
+	    }
 	},
 	// 팝업 닫기
 	closePopup : function() {
@@ -183,28 +276,6 @@
 		     }
 		 });
 	},
-	// html을 특정 div에 넣기	
-	requestHtmlInclude: function(path, el) {
-		if (path) {
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function () {
-                if (this.readyState == 4 
-					&& this.status == 200
-					&& !this.responseURL.includes("login.view") ) {
-                    el.innerHTML = this.responseText;
-					el.style.display = "block";
-                }
-            };
-
-			let rToken = REQ.getRToken();
-        	let aToken = REQ.getAToken();
-
-            xhttp.open('GET', path + "?"+ parseInt(Date.now()/1000), true);
-            xhttp.setRequestHeader("X-AUTH-RTOKEN", rToken);
-            xhttp.setRequestHeader("X-AUTH-ATOKEN", aToken);
-            xhttp.send();
-        }
-	}
 }
 
 // export { CONN }
@@ -214,14 +285,26 @@
 */ 
 
 // 동기, 비동기 호출 예시
-async function asyncTest() {
-    let temp = await REQ.get("https://jsonplaceholder.typicode.com/todos/1", {}, function() { console.log("req callback1") });
-    console.log(temp);
-    let temp2 = await REQ.get("https://jsonplaceholder.typicode.com/todos/2", temp, function() { console.log("req callback2") });
-    console.log(temp2);
-    REQ.get("https://jsonplaceholder.typicode.com/todos/3", temp2, function() { console.log("req callback3") });
-}
+//async function asyncTest() {
+//    let temp = await REQ.get({
+//		url :"https://jsonplaceholder.typicode.com/todos/1"
+//		, params: {}
+//		, success : function() { console.log("req callback1") }
+//		, keepLoading : true 
+//	});
+//    console.log(temp);
+//    let temp2 = await REQ.get({
+//		url :"https://jsonplaceholder.typicode.com/todos/2"
+//		, params: temp
+//		, success : function() { console.log("req callback2") }
+//		, keepLoading : true 
+//	});
+//    console.log(temp2);
+//    await REQ.get({
+//		url :"https://jsonplaceholder.typicode.com/todos/3"
+//		, params: temp2
+//		, success : function() { console.log("req callback3") }
+//	});
+//}
 
-asyncTest();
-
-
+//asyncTest();
