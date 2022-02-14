@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script defer src="/example.js"></script>
+</head>
+<!-- 본문이 들어가는 부분입니다. 퍼블리싱 부분에서 제공한 html을 붙이시면 됩니다. -->
+<th:block layout:fragment="content">
+<h2>※ 자세한 javascript 관련 사항은 example.js 파일 참고</h2>
+<h4>===============================</h4>
+<h4>===============================</h4>
+--- <br>
+ajax 테스트<br>
+<div>
+	<input id="test">
+	<button id="submitBtn">submit</button>
+	<div id="submitResult"></div>
+</div><br>
+---<br>
+페이지 이동<br>
+<div>
+	<button id="locationBtn">submit</button>
+</div><br>
+============== <br>
+COMM 내부 함수<br>
+--- <br>
+isNotEmpty 테스트<br>
+: 해당 값이 null, undefined 이 아니거나 비어있지 않으면 true 반환<br>
+<div>
+	<input class="inp" value="123">
+	<button class="testBtn" func="COMM.isNotEmpty">체크</button>
+	<div class="result"></div>
+</div><br>
+--- <br>
+null2Void 테스트<br>
+: 해당 값이 null, undefined 이면 공백 반환 아닐시 입력한 값 반환 / 자매품 null2Zero<br>
+<div>
+	<input class="inp" value="123">
+	<button class="testBtn" func="COMM.null2Void">체크</button>
+	<div class="result"></div>
+</div><br>
+============== <br>
+============== <br>
+FORM 내부 함수<br>
+--- <br>
+money2Comma 테스트<br>
+: 금액에 콤마 추가<br>
+<div>
+	<input class="inp" value="1231231231231">
+	<button class="testBtn" func="FORM.money2Comma">체크</button>
+	<div class="result"></div>
+</div><br>
+--- <br>
+money2Kor 테스트<br>
+: 금액을 순 한글로 변환<br>
+<div>
+	<input class="inp" value="100000000">
+	<button class="testBtn" func="FORM.money2Kor">체크</button>
+	<div class="result"></div>
+</div><br>
+--- <br>
+money2NumKor 테스트<br>
+: 금액 숫자 + 한글로 변환 (1억, 3천만원)<br>
+<div>
+	<input class="inp" value="1003000000">
+	<button class="testBtn" func="FORM.money2NumKor">체크</button>
+	<div class="result"></div>
+</div><br>
+============== <br>
+============== <br>
+DATE 내부 함수<br>
+--- <br>
+getNowDate 테스트<br>
+: 현재 날짜 가져오기<br>
+<div>
+	<input class="inp" value="구분자">
+	<button class="testBtn" func="DATE.getNowDate">체크</button>
+	<div class="result"></div>
+</div><br>
+--- <br>
+getNowTime 테스트<br>
+: 현재 시간 가져오기<br>
+<div>
+	<input class="inp" value="구분자">
+	<button class="testBtn" func="DATE.getNowTime">체크</button>
+	<div class="result"></div>
+</div><br>
+--- <br>
+getNowDateTime 테스트<br>
+: 현재 날짜 시간 가져오기<br>
+<div>
+	<input class="inp" value="구분자">
+	<button class="testBtn" func="DATE.getNowDateTime">체크</button>
+	<div class="result"></div>
+</div><br>
+--- <br>
+getManAge 테스트<br>
+: 만나이 계산기<br>
+<div>
+	<input class="inp" value="930913">
+	<button class="testBtn" func="DATE.getManAge">체크</button>
+	<div class="result"></div>
+</div><br>
+--- <br>
+getAge 테스트<br>
+: 나이 계산기<br>
+<div>
+	<input class="inp" value="930913">
+	<button class="testBtn" func="DATE.getAge">체크</button>
+	<div class="result"></div>
+</div><br>
+--- <br>
+ms2Date 테스트<br>
+: 밀리세컨드 -> 날짜로 변환<br>
+<div>
+	<input class="inp" value="123123123">
+	<button class="testBtn" func="DATE.ms2Date">체크</button>
+	<div class="result"></div>
+</div><br>
+--- <br>
+dateDiff 테스트<br>
+: 날짜 차이 계산기<br>
+<div>
+	시작 날짜
+	<input class="inp1" value="19930913"><br>
+	끝 날짜
+	<input class="inp2" value="20000913">
+	<button id="getDateDiff" func="DATE.dateDiff">체크</button>
+	<div class="result"></div>
+</div><br>
+============== <br>
+<th:block>
+</html>

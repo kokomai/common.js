@@ -29,27 +29,6 @@
     delAToken : function() {
         sessionStorage.removeItem("aToken");
     },
-    // 최초 token 셋팅
-    requestToken : function(params) {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: "/loginCheck.do"
-                , data: params
-                , type: "POST"
-                , async: false
-                , dataType: "JSON"
-                , success: function(res) {
-                	console.log("success" + res);
-                    REQ.setAToken(res.aToken);
-                    REQ.setRToken(res.rToken);
-                    resolve(res);
-                }
-                , error: function(res) {
-                    reject(res);
-                }
-            });
-        });
-    },
     // access token 헤더값 설정
     aTokenHeader : function(xhr) {
         let aToken = REQ.getAToken();
@@ -72,42 +51,51 @@
 			params : 전달할 파라미터 ({})
 			success : 성공시 호출할 콜백 함수
 			error : 에러시 호출할 콜백 함수
+			noLoading : true
+				-> true 설정시, loading 없이 호출
 			keepLoading : true 
 				-> 여러번 비동기로 호출 시 앞서 호출한 ajax가 loading을 가리지 않게 하기 
 		}
 	*/
     get : function(options) {
-		COMM.loading();
+		let url = "";
+		let params = {};
+		let successF = function(res) {
+			console.log(res);
+		};
+		let errorF = function(res) {
+			console.error(res);
+		};
+		let isLoading = true;
+		let isHideLoading = true;
+		
+		if(typeof options === "object") {
+			if(options.url) {
+				url = options.url
+			}
+			if(options.params) {
+				params = options.params
+			}
+			if(options.success) {
+				successF = options.success
+			}
+			if(options.error) {
+				errorF = options.error
+			}
+			if(options.noLoading) {
+				isLoading = !options.noLoading
+			}
+			if(options.keepLoading) {
+				isHideLoading = !options.keepLoading
+			}
+		}
+		
+		if(isLoading) {
+			COMM.loading();
+		}
+		
         try {
             return new Promise((resolve, reject) => {
-				let url = "";
-				let params = {};
-				let successF = function(res) {
-					console.log(res);
-				};
-				let errorF = function(res) {
-					console.error(res);
-				};
-				let isHideLoading = true;
-				
-				if(typeof options === "object") {
-					if(options.url) {
-						url = options.url
-					}
-					if(options.params) {
-						params = options.params
-					}
-					if(options.success) {
-						successF = options.success
-					}
-					if(options.error) {
-						errorF = options.error
-					}
-					if(options.keepLoading) {
-						isHideLoading = !options.keepLoading
-					}
-				}
-				
                 $.ajax({
                     url: url
                     , data: params
@@ -144,42 +132,50 @@
 			params : 전달할 파라미터 ({})
 			success : 성공시 호출할 콜백 함수
 			error : 에러시 호출할 콜백 함수
+			noLoading : true
+				-> true 설정시, loading 없이 호출
 			keepLoading : true 
-				-> 여러번 비동기로 호출 시 앞서 호출한 ajax가 loading을 가리지 않게 하기 
+				-> 여러번 비동기로 호출 시 앞서 호출한 ajax가 loading을 가리지 않게 하기
 		}
 	*/
     post : function(options) {
-        COMM.loading();
+		let url = "";
+		let params = {};
+		let successF = function(res) {
+			console.log(res);
+		};
+		let errorF = function(res) {
+			console.error(res);
+		};
+		let isLoading = true;
+		let isHideLoading = true;
+		
+		if(typeof options === "object") {
+			if(options.url) {
+				url = options.url
+			}
+			if(options.params) {
+				params = options.params
+			}
+			if(options.success) {
+				successF = options.success
+			}
+			if(options.error) {
+				errorF = options.error
+			}
+			if(options.noLoading) {
+				isLoading = !options.noLoading
+			}
+			if(options.keepLoading) {
+				isHideLoading = !options.keepLoading
+			}
+		}
+		
+		if(isLoading) {
+			COMM.loading();
+		}
         try {
             return new Promise((resolve, reject) => {
-               let url = "";
-				let params = {};
-				let successF = function(res) {
-					console.log(res);
-				};
-				let errorF = function(res) {
-					console.error(res);
-				};
-				let isHideLoading = true;
-				
-				if(typeof options === "object") {
-					if(options.url) {
-						url = options.url
-					}
-					if(options.params) {
-						params = options.params
-					}
-					if(options.success) {
-						successF = options.success
-					}
-					if(options.error) {
-						errorF = options.error
-					}
-					if(options.keepLoading) {
-						isHideLoading = !options.keepLoading
-					}
-				}
-				
                 $.ajax({
                     url: url
                     , data: params
@@ -214,25 +210,31 @@
     // data : 이동할 페이지로 넘길 object (반드시 object 형태로 넘겨줄 것 ex : {"data" : "데이터", "list" : ['1', '2']})
     location : async function(url, data) {
         try {
-            // object 형태의 데이터가 있을 시 세션스토리지에 저장.. 가져오는 것은 common.js 내의 COMM.getPageData 사용
+            // object 형태의 데이터가 있을 시 세션스토리지에 저장.. 가져오는 것은 REQ.getPageData 사용
             if(data !== undefined && data !== null && typeof data === "object") {
                 sessionStorage.setItem("pageData", JSON.stringify(data));
             }
 
-            $.ajax({
-                url: url
-                , data: {}
-                , type: "GET"
-                , async : true
-                , beforeSend: REQ.rTokenHeader
-				, success : function(res, stat, req) {
-					location.href = url;
-				}
-            });
+			location.href = url;
+//            $.ajax({
+//                url: url
+//                , data: {}
+//                , type: "GET"
+//                , async : true
+//                , beforeSend: REQ.rTokenHeader
+//				, success : function(res, stat, req) {
+//					location.href = url;
+//				}
+//            });
 			
         } catch(e) {
             console.log(e);
         }
+    },
+	// 이전 페이지에서 보낸 데이터 가져오기
+    // 페이지 이동시 데이터를 설정하는 것은 REQ.location을 사용
+    getPageData : function() {
+        return JSON.parse(sessionStorage.getItem("pageData"));
     },
 	// 팝업 보여주기
 	// 팝업 파일 경로는 반드시 static/popup 안으로..
@@ -267,8 +269,13 @@
 	// 팝업 닫기 이벤트를 id로 binding
 	// 부모 js에서 이를 셋팅해주면 팝업 닫칠 시 callback 설정도 가능
 	setClosePopup : function(id, callback) {
-		// 팝업 내부의 element에 event를 binding
-		document.addEventListener('click', function(e) {
+		/**
+			doc이 그려지고 난 뒤 생성된 element이기에
+			docuemnt 전체에 이벤트를 걸어야 함.
+		 */
+	
+		document
+		.addEventListener('click', function (e) {
 		    if(e.target
 			&& e.target.id === id 
 			&& document.querySelector("#" + id).closest("#__popup")){
@@ -286,26 +293,27 @@
 */ 
 
 // 동기, 비동기 호출 예시
-//async function asyncTest() {
-//    let temp = await REQ.get({
-//		url :"https://jsonplaceholder.typicode.com/todos/1"
-//		, params: {}
-//		, success : function() { console.log("req callback1") }
-//		, keepLoading : true 
-//	});
-//    console.log(temp);
-//    let temp2 = await REQ.get({
-//		url :"https://jsonplaceholder.typicode.com/todos/2"
-//		, params: temp
-//		, success : function() { console.log("req callback2") }
-//		, keepLoading : true 
-//	});
-//    console.log(temp2);
-//    await REQ.get({
-//		url :"https://jsonplaceholder.typicode.com/todos/3"
-//		, params: temp2
-//		, success : function() { console.log("req callback3") }
-//	});
-//}
+async function asyncTest() {
+    let temp = await REQ.get({
+		url :"https://jsonplaceholder.typicode.com/todos/1"
+		, params: {}
+		, success : function() { console.log("req callback1") }
+		, noLoading : true 
+		, keepLoading : true 
+	});
+    console.log(temp);
+    let temp2 = await REQ.get({
+		url :"https://jsonplaceholder.typicode.com/todos/2"
+		, params: temp
+		, success : function() { console.log("req callback2") }
+		, keepLoading : true 
+	});
+    console.log(temp2);
+    await REQ.get({
+		url :"https://jsonplaceholder.typicode.com/todos/3"
+		, params: temp2
+		, success : function() { console.log("req callback3") }
+	});
+}
 
 //asyncTest();

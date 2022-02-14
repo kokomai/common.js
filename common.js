@@ -46,9 +46,8 @@
         || typeof obj === "undefined" 
         || obj === ""
         || (typeof obj === "object" 
-            && (JSON.stringify(obj) === "{}" 
-            || JSON.stringify(obj) === "[]")
-        )
+            && (JSON.stringify(obj) === "{}" || JSON.stringify(obj) === "[]")
+			)
         ) {
             return false;
         } else {
@@ -61,11 +60,6 @@
     // dest : 바뀐 후의 문자
     replaceAll : function(str, org, dest) {
         return str.split(org).join(dest);
-    },
-    // 이전 페이지에서 보낸 데이터 가져오기
-    // 설정하는 것은 hug-request.js 내의 REQ.location을 사용
-    getPageData : function() {
-        return JSON.parse(sessionStorage.getItem("pageData"));
     },
 	// 개발자들이 전역으로 사용해야 할 휘발성 커스텀 함수 정의
 	custFn : {
@@ -98,77 +92,141 @@
 		}
 	},
 	// 공용 alert를 띄워줌
-	// msg : 메세지
-	// title : 타이틀
-	// callback : 버튼 클릭시 콜백
-	// btnText : 버튼 텍스트
-	alert : function(msg, title, callback, btnText) {
+	/*
+		options :{
+			msg : 메세지
+			title : 타이틀
+			callback : 버튼 클릭시 콜백
+			btnText : 버튼 텍스트	
+		}
+	*/
+	 
+	alert : function(options) {
+		let msg = "";
+		let title = "안내";
+		let callback = function() {};
+		let btnText = "확인";
+		
+		if(typeof options === "object") {
+			if(options.msg) {
+				msg = options.msg
+			}
+			if(options.title) {
+				title = options.title
+			}
+			if(options.callback) {
+				callback = options.callback
+			}
+			if(options.btnText) {
+				btnText = options.btnText
+			}
+		}
+		
 		// 기존 alert / confirm 없애주기
 		document.getElementById("__confirm").style.display = "none";
 		document.getElementById("__alert").style.display = "none";
 		
+		document.querySelector("#__alert #__title").textContent = title;
 		document.querySelector("#__alert #__msg").textContent = msg;
+		document.querySelector("#__alert #__confirmBtn").textContent = btnText;
 		
-		if(title) {
-			document.querySelector("#__alert #__title").textContent = title;	
-		}
+		/**
+			vanilla js에서는 계속 addEvent를 할시에 콜백이 계속 추가 되므로
+			동일한 버튼을 계속 사용할 시에
+			반드시 바인딩 이전에 이전 함수를 지워줘야 함. 
+		 */
 		
-		if(btnText) {
-			document.querySelector("#__alert #__confirmBtn").textContent = btnText;	
-		}
+		// confrim 버튼
+		let confirmBtn = document.querySelector("#__alert #__confirmBtn");
+		// 이전에 바인딩 된 함수 제거
+		confirmBtn.removeEventListener("click", COMM._alert_onConfirm);
 		
-		document
-		.querySelector("#__alert #__confirmBtn")
-		.addEventListener("click", function() {
+		COMM["_alert_onConfirm"] = function() {
 			document.getElementById("__alert").style.display = "none";
-			
-			if(typeof callback === "function") {
-				callback();
-			}						
-		});
+			callback();
+		}
+		
+		// 새로운 함수 바인딩
+		confirmBtn.addEventListener("click", COMM._alert_onConfirm);
 		
 		document.getElementById("__alert").style.display = "block";
 	},
 	// 공용 confirm창을 띄워줌
-	// msg : 메세지
-	// title : 타이틀
-	// callback : 확인 버튼 클릭시 콜백
-	// confirmText : 확인 버튼 텍스트
-	// cancelText : 취소 버튼 텍스트
-	confirm : function(msg, title, callback, confirmText, cancelText) {
+	/*
+		options : {
+			msg : 메세지
+			title : 타이틀
+			onConfirm : 확인 버튼 클릭시 콜백
+			onCancel : 취소 버튼 클릭시 콜백
+			confirmText : 확인 버튼 텍스트
+			cancelText : 취소 버튼 텍스트
+		}
+	*/
+	confirm : function(options) {
+		let msg = "";
+		let title = "안내";
+		let onConfirm = function() {};
+		let onCancel = function() {};
+		let confirmText = "확인";
+		let cancelText = "취소";
+		
+		if(typeof options === "object") {
+			if(options.msg) {
+				msg = options.msg
+			}
+			if(options.title) {
+				title = options.title
+			}
+			if(options.onConfirm) {
+				onConfirm = options.onConfirm
+			}
+			if(options.onCancel) {
+				onCancel = options.onCancel
+			}
+			if(options.confirmText) {
+				confirmText = options.confirmText
+			}
+			if(options.cancelText) {
+				cancelText = options.cancelText
+			}
+		}
 		// 기존 alert / confirm 없애주기
 		document.getElementById("__confirm").style.display = "none";
 		document.getElementById("__alert").style.display = "none";
 		
 		document.querySelector("#__confirm #__msg").textContent = msg;
+		document.querySelector("#__confirm #__title").textContent = title;	
+		document.querySelector("#__confirm #__confirmBtn").textContent = confirmText;	
+		document.querySelector("#__confirm #__cancelBtn").textContent = cancelText;	
 		
-		if(title) {
-			document.querySelector("#__confirm #__title").textContent = title;	
-		}
+		/**
+			vanilla js에서는 계속 addEvent를 할시에 콜백이 계속 추가 되므로
+			동일한 버튼을 계속 사용할 시에
+			반드시 바인딩 이전에 이전 함수를 지워줘야 함. 
+		 */
+		// confrim 버튼
+		let confirmBtn = document.querySelector("#__confirm #__confirmBtn");
+		// 이전에 바인딩 된 함수 제거
+		confirmBtn.removeEventListener("click", COMM._confirm_onConfirm);
 		
-		if(confirmText) {
-			document.querySelector("#__confirm #__confirmBtn").textContent = confirmText;	
-		}
-		
-		if(cancelText) {
-			document.querySelector("#__confirm #__cancelBtn").textContent = cancelText;	
-		}
-		
-		document
-		.querySelector("#__confirm #__confirmBtn")
-		.addEventListener("click", function() {
+		COMM["_confirm_onConfirm"] = function() {
 			document.getElementById("__confirm").style.display = "none";
-									
-			if(typeof callback === "function") {
-				callback();
-			}
-		});
+			onConfirm();
+		}
+		// 새로운 함수 바인딩
+		confirmBtn.addEventListener("click", COMM._confirm_onConfirm);
 		
-		document
-		.querySelector("#__confirm #__cancelBtn")
-		.addEventListener("click", function() {
-			document.getElementById("__confirm").style.display = "none";						
-		});
+		// cancel 버튼
+		let cancelBtn = document.querySelector("#__confirm #__cancelBtn");
+		// 이전에 바인딩 된 함수 제거
+		cancelBtn.removeEventListener("click", COMM._confirm_onCancel);
+		
+		COMM["_confirm_onCancel"] = function() {
+			document.getElementById("__confirm").style.display = "none";
+			onCancel();
+		}
+		
+		cancelBtn.addEventListener("click", COMM._confirm_onCancel);
 		
 		document.getElementById("__confirm").style.display = "block";
 	}
@@ -357,7 +415,7 @@ const DATE = {
     // 날짜 차이 구하기
     // start : 시작년월일("19930913")
     // end : 끝년월일("20000913")
-    getDateDiff : function(start, end) {
+    dateDiff : function(start, end) {
         let stDt = new Date(start.substring(0, 4), start.substring(4, 6), start.substring(6, 8));
         let edDt = new Date(end.substring(0, 4), end.substring(4, 6), end.substring(6, 8));
         let msDiff = edDt.getTime() - stDt.getTime();
@@ -366,6 +424,10 @@ const DATE = {
     },
     // 밀리세컨드 -> 날짜로 변환
     ms2Date : function(ms, str) {
+		if(typeof ms === "string") {
+			ms = Math.round(ms);	
+		}
+		
         str = COMM.null2Void(str);
         let resultStr = "";
         let now = new Date(ms)
@@ -375,6 +437,10 @@ const DATE = {
         
         if(month.length === 1) {
             month = "0" + month;
+        }
+
+        if(date.length === 1) {
+            date = "0" + date;
         }
 
         resultStr = year + str + month + str + date;
