@@ -5,6 +5,10 @@
  */
 
  const REQ = {
+	// loading 함수 정의
+	loading : function() {
+		COMM.loading();
+	},
     // refresh token 가져오기(localStorage)
     getRToken : function() {
         return localStorage.getItem("rToken");
@@ -91,7 +95,7 @@
 		}
 		
 		if(isLoading) {
-			COMM.loading();
+			REQ.loading();
 		}
 		
         try {
@@ -108,7 +112,7 @@
                         resolve(res, stat, req);
 
 						if(isHideLoading) {
-							COMM.loading(false);	
+							REQ.loading(false);	
 						}
                     }
                     , error : function(res) {
@@ -116,7 +120,7 @@
                         reject(res);
 
 						if(isHideLoading) {
-							COMM.loading(false);	
+							REQ.loading(false);	
 						}
                     }
                 });
@@ -172,7 +176,7 @@
 		}
 		
 		if(isLoading) {
-			COMM.loading();
+			REQ.loading();
 		}
         try {
             return new Promise((resolve, reject) => {
@@ -188,7 +192,7 @@
                         resolve(res, stat, req);
 
 						if(isHideLoading) {
-							COMM.loading(false);	
+							REQ.loading(false);	
 						}
                     }
                     , error : function(res) {
@@ -196,7 +200,7 @@
                         reject(res);
 
 						if(isHideLoading) {
-							COMM.loading(false);	
+							REQ.loading(false);	
 						}
                     }
                 });

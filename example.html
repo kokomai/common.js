@@ -1,12 +1,26 @@
 <!DOCTYPE html>
-<html>
+<!-- 아래 html 내에 있는 설정들을 꼭 같이 옮기셔야 합니다. -->
+<!-- th:with="metaTitle='타이틀'" 타이틀을 변경하실 수 있습니다. -->
+<html
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorator="~{layout/defaultLayout}"
+	th:with="metaTitle='예시 타이틀'"
+>
+<!-- 아래의 head 태그 내에서는 해당 페이지에서 실행하는 비지니스 js 로직 파일을 선언합니다. -->
+<!-- 반드시 아래의 양식대로 작성해주셔야 합니다. -->
 <head>
-	<script defer src="/example.js"></script>
+	<script defer th:src="@{/js/example/example.js}"></script>
 </head>
 <!-- 본문이 들어가는 부분입니다. 퍼블리싱 부분에서 제공한 html을 붙이시면 됩니다. -->
 <th:block layout:fragment="content">
 <h2>※ 자세한 javascript 관련 사항은 example.js 파일 참고</h2>
 <h4>===============================</h4>
+<h4>
+	기본적인 구조는 defaultLayout.html을 통해 짜여져 있습니다.
+	해당 layout을 참고하시어, 수정해야 할 변경 사항들은 해당 html에서 수정하시면 됩니다.
+	각종 공통 script, css의 file injection(=import)은 head.html에서 이루어집니다.
+</h4>
 <h4>===============================</h4>
 --- <br>
 ajax 테스트<br>
@@ -15,10 +29,34 @@ ajax 테스트<br>
 	<button id="submitBtn">submit</button>
 	<div id="submitResult"></div>
 </div><br>
+--- <br>
+동기화된 ajax 테스트(순차적으로 호출.. 반드시 js 참조)<br>
+<div>
+	<button id="syncSubmitBtn">순차적 submit</button>
+	<button id="asyncSubmitBtn">비동기식 submit</button>
+	<div>※js참고하시고 로그확인 해주세요</div>
+</div><br>
 ---<br>
 페이지 이동<br>
 <div>
 	<button id="locationBtn">submit</button>
+</div><br>
+---<br>
+팝업 오픈(디자인이 안된 default로는 맨 위에 띄워짐..)<br>
+<div>
+	<button type="button" id="showPopup" class="btnBig btnBlue">팝업 오픈</button>
+</div><br>
+--- <br>
+alert 테스트(안보일 경우 크롬 개발자 모드를 끄고 볼것)<br>
+<div>
+	<input id="alerText" value="예시 텍스트">
+	<button id="showAlert">alert 호출</button>
+</div><br>
+--- <br>
+confirm 테스트(안보일 경우 크롬 개발자 모드를 끄고 볼것)<br>
+<div>
+	<input id="confirmText" value="예시 컨펌 텍스트">
+	<button id="showConfirm">confirm창 호출</button>
 </div><br>
 ============== <br>
 COMM 내부 함수<br>
@@ -27,7 +65,7 @@ isNotEmpty 테스트<br>
 : 해당 값이 null, undefined 이 아니거나 비어있지 않으면 true 반환<br>
 <div>
 	<input class="inp" value="123">
-	<button class="testBtn" func="COMM.isNotEmpty">체크</button>
+	<button class="testBtn" data-func="COMM.isNotEmpty">체크</button>
 	<div class="result"></div>
 </div><br>
 --- <br>
@@ -35,7 +73,7 @@ null2Void 테스트<br>
 : 해당 값이 null, undefined 이면 공백 반환 아닐시 입력한 값 반환 / 자매품 null2Zero<br>
 <div>
 	<input class="inp" value="123">
-	<button class="testBtn" func="COMM.null2Void">체크</button>
+	<button class="testBtn" data-func="COMM.null2Void">체크</button>
 	<div class="result"></div>
 </div><br>
 ============== <br>
@@ -46,7 +84,7 @@ money2Comma 테스트<br>
 : 금액에 콤마 추가<br>
 <div>
 	<input class="inp" value="1231231231231">
-	<button class="testBtn" func="FORM.money2Comma">체크</button>
+	<button class="testBtn" data-func="FORM.money2Comma">체크</button>
 	<div class="result"></div>
 </div><br>
 --- <br>
@@ -54,7 +92,7 @@ money2Kor 테스트<br>
 : 금액을 순 한글로 변환<br>
 <div>
 	<input class="inp" value="100000000">
-	<button class="testBtn" func="FORM.money2Kor">체크</button>
+	<button class="testBtn" data-func="FORM.money2Kor">체크</button>
 	<div class="result"></div>
 </div><br>
 --- <br>
@@ -62,7 +100,7 @@ money2NumKor 테스트<br>
 : 금액 숫자 + 한글로 변환 (1억, 3천만원)<br>
 <div>
 	<input class="inp" value="1003000000">
-	<button class="testBtn" func="FORM.money2NumKor">체크</button>
+	<button class="testBtn" data-func="FORM.money2NumKor">체크</button>
 	<div class="result"></div>
 </div><br>
 ============== <br>
@@ -73,7 +111,7 @@ getNowDate 테스트<br>
 : 현재 날짜 가져오기<br>
 <div>
 	<input class="inp" value="구분자">
-	<button class="testBtn" func="DATE.getNowDate">체크</button>
+	<button class="testBtn" data-func="DATE.getNowDate">체크</button>
 	<div class="result"></div>
 </div><br>
 --- <br>
@@ -81,7 +119,7 @@ getNowTime 테스트<br>
 : 현재 시간 가져오기<br>
 <div>
 	<input class="inp" value="구분자">
-	<button class="testBtn" func="DATE.getNowTime">체크</button>
+	<button class="testBtn" data-func="DATE.getNowTime">체크</button>
 	<div class="result"></div>
 </div><br>
 --- <br>
@@ -89,7 +127,7 @@ getNowDateTime 테스트<br>
 : 현재 날짜 시간 가져오기<br>
 <div>
 	<input class="inp" value="구분자">
-	<button class="testBtn" func="DATE.getNowDateTime">체크</button>
+	<button class="testBtn" data-func="DATE.getNowDateTime">체크</button>
 	<div class="result"></div>
 </div><br>
 --- <br>
@@ -97,7 +135,7 @@ getManAge 테스트<br>
 : 만나이 계산기<br>
 <div>
 	<input class="inp" value="930913">
-	<button class="testBtn" func="DATE.getManAge">체크</button>
+	<button class="testBtn" data-func="DATE.getManAge">체크</button>
 	<div class="result"></div>
 </div><br>
 --- <br>
@@ -105,7 +143,7 @@ getAge 테스트<br>
 : 나이 계산기<br>
 <div>
 	<input class="inp" value="930913">
-	<button class="testBtn" func="DATE.getAge">체크</button>
+	<button class="testBtn" data-func="DATE.getAge">체크</button>
 	<div class="result"></div>
 </div><br>
 --- <br>
@@ -113,7 +151,7 @@ ms2Date 테스트<br>
 : 밀리세컨드 -> 날짜로 변환<br>
 <div>
 	<input class="inp" value="123123123">
-	<button class="testBtn" func="DATE.ms2Date">체크</button>
+	<button class="testBtn" data-func="DATE.ms2Date">체크</button>
 	<div class="result"></div>
 </div><br>
 --- <br>
@@ -124,8 +162,45 @@ dateDiff 테스트<br>
 	<input class="inp1" value="19930913"><br>
 	끝 날짜
 	<input class="inp2" value="20000913">
-	<button id="getDateDiff" func="DATE.dateDiff">체크</button>
+	<button id="getDateDiff" data-func="DATE.dateDiff">체크</button>
 	<div class="result"></div>
+</div><br>
+============== <br>
+============== <br>
+Validation input(설명 주석 참고)<br>
+<!-- 
+※ validation input의 경우, 아래와 같이 data-Fvalid에 해당 input을 체크할 함수를
+명시한 뒤, data-Finvalid에 양식에 맞지않을 시 실행할 함수를 명시하시면 됩니다.
+만약 함수를 명시 안하실 경우, 자동으로 하위에 있는 태그의 data-Ferror를 찾아
+data-Ferror에 명시한 글자를 input 아래에 띄워줍니다.
+
+※ data-Fvalid에 사용 할 함수는 true / false 값을 return 하는 함수라면 무엇이든 사용 가능 합니다.
+한글 체크 숫자 체크 등의 기본 validation 함수는 common.js -> COMM에 선언해 두었습니다.
+필요하신 경우 커스터마이징한 함수 이름을 value로 넣으셔도 가능합니다.
+-->
+<br>
+--- <br>
+COMM.isKor 테스트 <br>
+(커스터마이징 함수.. 콘솔창 확인)<br>
+: 전체 한글이면 true<br>
+<div>
+	<input data-Fvalid="COMM.isKor" data-Finvalid="function() { console.log('invalid!') }"/>
+	<p class="errorText" data-Ferror="한글을 입력해주세요."></p>
+</div><br>
+--- <br>
+COMM.isNum 테스트 <br>
+(default)<br>
+: 전체가 숫자면 true<br>
+<div>
+	<input data-Fvalid="COMM.isNum"/>
+	<p class="errorText" data-Ferror="숫자를 입력해주세요."></p>
+</div><br>
+--- <br>
+COMM.isEmail 테스트 <br>
+: 이메일 양식이면 true<br>
+<div>
+	<input data-Fvalid="COMM.isEmail"/>
+	<p class="errorText" data-Ferror="이메일 양식을 입력해주세요."></p>
 </div><br>
 ============== <br>
 <th:block>

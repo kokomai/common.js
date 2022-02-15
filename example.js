@@ -20,6 +20,8 @@
 	하지만 document가 준비 되기 전 특별히 실행해야할 사항들이 공통적으로 존재한다면
 	hug-execute.js에서 실행하거나 binding 해주세요.
 */
+// https://jeonghwan-kim.github.io/dev/2020/06/08/html5-form-validation.html
+// -> html form 커스터마이징
 $(document).ready(function(){
 	/* 
 		아래와 같이 보기 편하게 하기 위해 함수 선언부와 
@@ -29,10 +31,10 @@ $(document).ready(function(){
 		※ 공통함수로는 COMM, FORM, DATE, REQ, MOB이 존재합니다.
 		
 		COMM : COMM의 경우 기본적으로 사용할 수 있는 alert confirm 창 호출
-		, null 체크 등의 함수가 들어있습니다. 
+		, null 체크, 숫자체크 등의 함수가 들어있습니다. 
 		
-		FORM : 텍스트의 형식을 변환해주는 함수가 들어있습니다. 숫자 -> 한글 
-		숫자 -> 숫자 + 한글 등의 함수가 들어있습니다.
+		FORM : 텍스트의 형식을 변환해주는 함수가 들어있습니다. 금액 -> 한글 
+		금액 -> 숫자 + 한글 등의 함수가 들어있습니다.
 		
 		DATE : 날짜와 관련된 함수가 들어있습니다. 현재 날짜, 시간 등을 반환하거나
 		날짜 포맷을 변경해주는 함수들이 들어있습니다.
@@ -41,6 +43,14 @@ $(document).ready(function(){
 		
 		MOB : native쪽 함수를 호출하는 함수가 들어있습니다. 
 		
+		※ 공통 로그 COMM.log();
+		로그의 경우 COMM.log를 사용하시면 
+		개발서버, 로컬서버에서만 해당 로그를 보여줍니다.
+		
+		※ 이 서버가 개발서버인가 로컬인가? 아님 운영인가?
+		COMM.isDevMode를 통해 사용 가능합니다
+		다만 개발서버의 경우 hug-common.js 최상단에 선언된
+		devUrl를 변경해주셔야 합니다.
 	*/
 	/*
 		함수 선언부 
@@ -61,7 +71,7 @@ $(document).ready(function(){
 					stat -> status
 					req -> request
 				*/
-				$("#submitResult").text(JSON.stringify(res)); 
+				$("#submitResult").text(res.data); 
 			}, error : function(res) { 
 				console.log(res);
 			}
@@ -71,16 +81,91 @@ $(document).ready(function(){
 	/*
 		event binding 
 	*/
-	// ajax 관련
+	// ajax 호출
 	$("#submitBtn").on("click", function() {
 		submit();
+	});
+	
+	// 동기화된 ajax 호출
+	/**
+		★아래 function 옆에 asnyc 반드시 확인!★
+		또한 동기식으로 돌리고 싶은 요청 앞에 await을 작성!
+	 */
+	$("#syncSubmitBtn").on("click", async function() {
+		console.log("첫번째 호출");
+		await REQ.post({
+			url: "https://httpbin.org/post"
+			, params : {test : "test"}
+			, success : function(res, stat, req) {
+				/*
+					res -> response
+					stat -> status
+					req -> request
+				*/
+				console.log("첫번째 완료"); 
+			}, error : function(res) { 
+				console.log(res);
+			}
+		});
+		
+		console.log("두번째 호출");
+		REQ.post({
+			url: "https://httpbin.org/post"
+			, params : {test : "test"}
+			, success : function(res, stat, req) {
+				/*
+					res -> response
+					stat -> status
+					req -> request
+				*/
+				
+				console.log("두번째 완료");
+			}, error : function(res) { 
+				console.log(res);
+			}
+		});
+	});
+	// 비동기식 ajax 호출
+	$("#asyncSubmitBtn").on("click", async function() {
+		console.log("첫번째 호출");
+		REQ.post({
+			url: "https://httpbin.org/post"
+			, params : {test : "test"}
+			, success : function(res, stat, req) {
+				/*
+					res -> response
+					stat -> status
+					req -> request
+				*/
+				console.log("첫번째 완료"); 
+			}, error : function(res) { 
+				console.log(res);
+			}
+		});
+		
+		console.log("두번째 호출");
+		REQ.post({
+			url: "https://httpbin.org/post"
+			, params : {test : "test"}
+			, success : function(res, stat, req) {
+				/*
+					res -> response
+					stat -> status
+					req -> request
+				*/
+				
+				console.log("두번째 완료"); 
+			}, error : function(res) { 
+				console.log(res);
+			}
+		});
 	});
 	
 	// 페이지 이동
 	$("#locationBtn").on("click", function() {
 		/*
 			page이동은 아래와 같이 REQ.location 함수를 사용하여 이용해주세요
-			두 번쨰 인자로 object(반드시 object로)형식을 넣게 되면
+			두 번째 인자로 object(반드시 object로)형식을 넣게 되면
 			다음 페이지에서 REQ.getPageData()를 통해 가져올 수 있습니다.
 		*/
 		REQ.location("/view/login/access", {"test" : "test"});
@@ -98,11 +183,11 @@ $(document).ready(function(){
 		
 		/*
 			위 팝업 html 내에 있는 특정 버튼을 닫기 버튼으로 사용하게끔 설정해주는 함수입니다.
-			두번쨰 인자로 함수를 넣으시면 닫기버튼 클릭 이후 해당 함수를 실행해 줍니다.
+			두번째 인자로 함수를 넣으시면 닫기버튼 클릭 이후 해당 함수를 실행해 줍니다.
 			혹시 팝업 내에서 다른 버튼을 추가적으로 binding 하고 싶으실 경우
 			일반적인 jquery 이벤트 바인딩방식을 그대로 사용하셔도 됩니다.
 		*/
-		REQ.setClosePopup("firstCloseBtn", function() {REQ.openPopup('/test_popup2')});
+		REQ.setClosePopup("firstCloseBtn", function() {});
 	});
 	
 	// alert 관련
@@ -148,11 +233,11 @@ $(document).ready(function(){
 	
 	// 각종 텍스트 테스트
 	$(".testBtn").on("click", function() {
-		let func = new Function("return " + $(this).attr("func") + "('" + $(this).siblings(".inp").val() +"')");
+		let func = new Function("return " + $(this).attr("data-func") + "('" + $(this).siblings(".inp").val() +"')");
 		$(this).siblings(".result").text((func()));
 	});
 	
-	// 날짜 차이
+	// 날짜 차이 구하기
 	$("#getDateDiff").on("click", function() {
 		$(this).siblings(".result").text(DATE.dateDiff($(this).siblings(".inp1").val(), $(this).siblings(".inp2").val())+"일");
 	});

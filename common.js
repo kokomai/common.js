@@ -229,6 +229,155 @@
 		cancelBtn.addEventListener("click", COMM._confirm_onCancel);
 		
 		document.getElementById("__confirm").style.display = "block";
+	},
+	// 한글이 포함되어 있는지 체크
+	checkKor : function(str) {
+		let check = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/;
+		if(check.test(str)) {
+			return true;
+		} else {
+			return false;
+		}
+	},
+	// 특수문자가 포함되어 있는지 체크
+	checkSymbol : function(str) {
+		let check = /[`~!@#$%^&*|\\\'\";:\/?,.\-{}()\[\]<>]/gi;
+		if(check.test(str)) {
+			return true;
+		} else {
+			return false;
+		}
+	},
+	// 영어가 포함되어 있는지 체크
+	checkEng : function(str) {
+		let check = /[a-zA-Z]/;
+		if(check.test(str)) {
+			return true;
+		} else {
+			return false;
+		}
+	},
+	// 숫자가 포함되어 있는지 체크
+	checkNum : function(str) {
+		let check = /[0-9]/;
+		if(check.test(str)) {
+			return true;
+		} else {
+			return false;
+		}
+	},
+	// 이메일 양식 체크
+	isEmail : function(str) {
+		let reg_email = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/;;
+		
+		if(COMM.isNotEmpty(str)
+		&& reg_email.test(str)) {                            
+		     return true;         
+		}                            
+		else {                       
+		     return false;         
+		} 
+	},
+	// 숫자인지 체크
+	isNum : function(str) {
+		if(isNaN(str) || !COMM.isNotEmpty(str)) {
+			return false;
+		} else {
+			return true;
+		}
+	},
+	// 순 한글인지 체크
+	isKor : function(str) {
+		if(COMM.isNotEmpty(str)
+		&& COMM.checkKor(str) 
+		&& !COMM.checkEng(str) 
+		&& !COMM.checkSymbol(str)
+		&& !COMM.checkNum(str)) {
+			return true;
+		} else {
+			return false;
+		}
+	},
+	// 영어만 있는지 체크
+	isEng : function(str) {
+		if(COMM.isNotEmpty(str)
+		&&COMM.checkEng(str) 
+		&& !COMM.checkKor(str) 
+		&& !COMM.checkSymbol(str)
+		&& !COMM.checkNum(str)) {
+			return true;
+		} else {
+			return false;
+		}
+	},
+	// 영어 + 숫자만 있는지 체크
+	isEngNum : function(str) {
+		if(COMM.isNotEmpty(str)
+		&& (COMM.checkEng(str) || COMM.checkNum(str)) 
+		&& !COMM.checkSymbol(str)
+		&& !COMM.checkKor(str)) {
+			return true;
+		} else {
+			return false;
+		}
+	},
+	// 주민등록번호 체크
+	isRegNum : function(str) {
+		let check = /^(?:[0-9]{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[1,2][0-9]|3[0,1]))-[1-8][0-9]{6}$/;
+		let check2 = /^(?:[0-9]{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[1,2][0-9]|3[0,1]))[1-8][0-9]{6}$/;
+		
+		if(COMM.isNotEmpty(str) && (check.test(str) || check2.test(str))) {
+			return true;
+		} else {
+			return false;
+		}
+	},
+	// 차량번호 체크
+	isCarNum : function(str) {
+		let check1 = /\d{2}[가-힣ㄱ-ㅎㅏ-ㅣ\x20]\d{4}/g; // 12저1234
+		let check2 = /\d{3}[가-힣ㄱ-ㅎㅏ-ㅣ\x20]\d{4}/g; // 123저1234
+    	let check3 = /[가-힣ㄱ-ㅎㅏ-ㅣ\x20]{2}\d{2}[가-힣ㄱ-ㅎㅏ-ㅣ\x20]\d{4}/g; // 서울12치1233
+
+		if(COMM.isNotEmpty(str) 
+		&& (check1.test(str) || check2.test(str) || check3.test(str))) {
+			return true;
+		} else {
+			return false;
+		}
+	},
+	// input의 validation 기능 추가
+	setValidInput : function() {
+		document.querySelectorAll("input[data-Fvalid]").forEach((input) => {
+			let _errorEl = input.nextElementSibling;
+						
+			if(_errorEl && _errorEl.getAttribute("data-Ferror")) {
+				_errorEl.style.display = "none";
+			}
+			
+			input.addEventListener("input", (e) => {
+				let check = new Function("return " + e.target.getAttribute("data-Fvalid") + "('" + e.target.value +"')");
+				let onInvalid = e.target.getAttribute("data-Finvalid");
+				
+				if(!(check()) && e.target.value !== "") {
+					if(onInvalid && onInvalid !== "") {
+						new Function("return " + e.target.getAttribute("data-Finvalid") + "()")();
+					} else {
+						let errorEl = e.target.nextElementSibling;
+						
+						if(errorEl && errorEl.getAttribute("data-Ferror")) {
+							errorEl.style.display = "block"
+							errorEl.innerText = errorEl.getAttribute("data-Ferror");		
+						}
+					}
+				} else {
+					let errorEl = e.target.nextElementSibling;
+						
+					if(errorEl && errorEl.getAttribute("data-Ferror")) {
+						errorEl.style.display = "none";
+					}
+				}
+			});
+		})
 	}
 }
 
@@ -373,7 +522,6 @@ const DATE = {
             }
             
             birth = new Date(birthYear, birth.substring(2, 4) - 1, birth.substring(4, 6));
-            console.log(birth);
 
             age = year - birthYear;
             let monthDiff = month - birth.getMonth();
@@ -449,8 +597,8 @@ const DATE = {
     }
 }
 
-
 // export { COMM, FORM, DATE }
+
 
 
 // test 영역 .. live server 라는 확장 프로그램 필요
