@@ -103,6 +103,36 @@ money2NumKor 테스트<br>
 	<button class="testBtn" data-func="FORM.money2NumKor">체크</button>
 	<div class="result"></div>
 </div><br>
+--- <br>
+emailMask 테스트<br><br>
+<div>
+	<input class="inp" value="abcd@gmail.com">
+	<button class="testBtn" data-func="FORM.emailMask">실행</button>
+	<div class="result"></div>
+</div><br>
+--- <br>
+nameMask 테스트<br><br>
+<div>
+	<input class="inp" value="김포이">
+	<button class="testBtn" data-func="FORM.nameMask">실행</button>
+	<div class="result"></div>
+</div><br>
+--- <br>
+phoneMask 테스트<br><br>
+: 핸드폰번호 마스킹, "-"이 없어도, 있어도 모두 마스킹<br>
+<div>
+	<input class="inp" value="010-1234-1234">
+	<button class="testBtn" data-func="FORM.phoneMask">실행</button>
+	<div class="result"></div>
+</div><br>
+--- <br>
+regNumMask 테스트<br><br>
+: 주민번호 마스킹, "-"이 없어도, 있어도 모두 마스킹<br>
+<div>
+	<input class="inp" value="930913-1111111">
+	<button class="testBtn" data-func="FORM.regNumMask">실행</button>
+	<div class="result"></div>
+</div><br>
 ============== <br>
 ============== <br>
 DATE 내부 함수<br>
@@ -177,6 +207,8 @@ data-Ferror에 명시한 글자를 input 아래에 띄워줍니다.
 ※ data-Fvalid에 사용 할 함수는 true / false 값을 return 하는 함수라면 무엇이든 사용 가능 합니다.
 한글 체크 숫자 체크 등의 기본 validation 함수는 common.js -> COMM에 선언해 두었습니다.
 필요하신 경우 커스터마이징한 함수 이름을 value로 넣으셔도 가능합니다.
+
+※ 글자수 제한의 경우 maxlength attribute를 사용해주세요
 -->
 <br>
 --- <br>
@@ -201,6 +233,40 @@ COMM.isEmail 테스트 <br>
 <div>
 	<input data-Fvalid="COMM.isEmail"/>
 	<p class="errorText" data-Ferror="이메일 양식을 입력해주세요."></p>
+</div><br>
+--- <br>
+COMM.isPhoneNum 테스트 <br>
+: 핸드폰 양식이면 true<br>
+<div>
+	<input data-Fvalid="COMM.isPhoneNum" maxlength="13"/>
+	<p class="errorText" data-Ferror="핸드폰번호 양식을 입력해주세요."></p>
+</div><br>
+============== <br>
+============== <br>
+Formed input (설명 주석 참고)<br>
+<!-- 
+※ formed input의 경우, 아래와 같이 data-Fform에 해당 input을 변환할 함수를
+명시하시면 focusout시, 자동으로 형식을 변환해 줍니다. 주로 금액 콤마, 핸드폰 양식에 사용될 것으로 예상됩니다.
+
+※ 글자수 제한의 경우 maxlength attribute를 사용해주세요
+-->
+<br>
+--- <br>
+핸드폰 양식 자동 변환 테스트 <br>
+<div>
+	<input data-Fform="FORM.phoneNum" data-Fvalid="COMM.isPhoneNum" data-Ffocus="true" maxlength="11"/>
+	<p class="errorText" data-Ferror="핸드폰번호 양식을 입력해주세요."></p>
+</div><br>
+--- <br>
+집전화 양식 자동 변환 테스트 <br>
+<div>
+	<input data-Fform="FORM.telNum" maxlength="10"/>
+</div><br>
+--- <br>
+금액 양식 자동 변환 테스트 <br>
+<div>
+	<input data-Fform="FORM.money2Comma"/>
+	<p class="errorText" data-Ferror="숫자를 입력해주세요."></p>
 </div><br>
 ============== <br>
 <th:block>

@@ -332,6 +332,16 @@
 			return false;
 		}
 	},
+	// 핸드폰번호 체크
+	isPhoneNum : function(str) {
+		let check = /^01([0|1|6|7|8|9])-?([0-9]{3,4})-?([0-9]{4})$/;
+		
+		if(COMM.isNotEmpty(str) && check.test(str)) {
+			return true;
+		} else {
+			return false;
+		}
+	},
 	// 차량번호 체크
 	isCarNum : function(str) {
 		let check1 = /\d{2}[가-힣ㄱ-ㅎㅏ-ㅣ\x20]\d{4}/g; // 12저1234
@@ -348,35 +358,86 @@
 	// input의 validation 기능 추가
 	setValidInput : function() {
 		document.querySelectorAll("input[data-Fvalid]").forEach((input) => {
+			input.removeEventListener("keyup", COMM._validFunc);	
+			input.removeEventListener("keydown", COMM._validFunc);	
+		});
+		
+		COMM["_validFunc"] = (e) => {
+			let check = new Function("return " + e.target.getAttribute("data-Fvalid") + "('" + e.target.value +"')");
+			let onInvalid = e.target.getAttribute("data-Finvalid");
+			if(!(check()) && e.target.value !== "") {
+				if(onInvalid && onInvalid !== "") {
+					new Function("return " + e.target.getAttribute("data-Finvalid") + "()")();
+				} else {
+					let errorEl = e.target.nextElementSibling;
+					
+					if(errorEl && errorEl.getAttribute("data-Ferror")) {
+						errorEl.style.display = "block"
+						errorEl.innerText = errorEl.getAttribute("data-Ferror");		
+					}
+				}
+			} else {
+				let errorEl = e.target.nextElementSibling;
+					
+				if(errorEl && errorEl.getAttribute("data-Ferror")) {
+					errorEl.style.display = "none";
+				}
+			}
+		}
+		
+		document.querySelectorAll("input[data-Fvalid]").forEach((input) => {
 			let _errorEl = input.nextElementSibling;
 						
 			if(_errorEl && _errorEl.getAttribute("data-Ferror")) {
 				_errorEl.style.display = "none";
 			}
 			
-			input.addEventListener("input", (e) => {
-				let check = new Function("return " + e.target.getAttribute("data-Fvalid") + "('" + e.target.value +"')");
-				let onInvalid = e.target.getAttribute("data-Finvalid");
-				
-				if(!(check()) && e.target.value !== "") {
-					if(onInvalid && onInvalid !== "") {
-						new Function("return " + e.target.getAttribute("data-Finvalid") + "()")();
-					} else {
-						let errorEl = e.target.nextElementSibling;
-						
-						if(errorEl && errorEl.getAttribute("data-Ferror")) {
-							errorEl.style.display = "block"
-							errorEl.innerText = errorEl.getAttribute("data-Ferror");		
-						}
-					}
-				} else {
-					let errorEl = e.target.nextElementSibling;
-						
-					if(errorEl && errorEl.getAttribute("data-Ferror")) {
-						errorEl.style.display = "none";
-					}
-				}
-			});
+			input.addEventListener("keyup", COMM._validFunc);
+			input.addEventListener("keydown", COMM._validFunc);
+			
+		})
+	},
+	// input의 자동 formatting 추가
+	setFormedInput : function() {
+		document.querySelectorAll("input[data-Fform]").forEach((input) => {
+			input.removeEventListener("focusout", COMM._formedFunc);	
+		});
+		
+		COMM["_formedFunc"] = (e) => {
+			let form = new Function("return " + e.target.getAttribute("data-Fform") + "('" + e.target.value +"')");
+			if(e.target.value !== "") {
+				e.target.value = form();
+			}
+		}
+		
+		document.querySelectorAll("input[data-Fform]").forEach((input) => {
+			input.addEventListener("focusout", COMM._formedFunc);
+			
+//			let position = 0;
+//			
+//			input.addEventListener("keydown", (e) => {
+//				if(e.key === "Backspace" || e.key === "Delete") {
+//					position = input.selectionStart;
+//				}
+//			});
+//			
+//			input.addEventListener("keyup", (e)=> {
+//				let originL = e.target.value.length;
+//				let formedL = FORM.toNum(e.target.value).length;
+//				let diff = formedL - originL;
+//				
+//				if((e.key === "Backspace" || e.key === "Delete")) {
+//					if(formedL === originL) {
+//						// 길이가 같으면 아무것도 안함
+//						console.log("same");
+////						input.setSelectionRange(position, position);	
+//					} else {
+//						console.log("diff");
+//						// 길이가 다르면 빼줌
+//						input.setSelectionRange(position-1, position-1);
+//					}
+//				}
+//			});
 		})
 	}
 }
@@ -384,7 +445,8 @@
 const FORM = {
     // 금액에 콤마 추가
     money2Comma : function(num) {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		num = COMM.replaceAll(num.toString(), ",", "");
+        return num.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
     // 금액 숫자 + 한글로 변환 (1억, 3천만원)
     money2NumKor : function(num) {
@@ -439,6 +501,151 @@ const FORM = {
 
         return result; 
     },
+	// 숫자만 반환
+	toNum : function(str) {
+		return str.toString().replace(/[^0-9]/g, "");
+	},
+	// 핸드폰 번호 하이픈
+	phoneNum : function(str) {
+		let value = FORM.toNum(str);
+		
+		if(value.length > 9) {
+			return value.replace(/(^02.{0}|^01.{1}|[0-9]{3})([0-9]+)([0-9]{4})/,"$1-$2-$3");	
+		}  else {
+			return value;				
+		}
+	},
+	// 유선 전화번호 하이폰
+	telNum : function(str) {
+		let value = FORM.toNum(str);
+		if(value.length === 9) {
+			return value.replace(/(\d{2})(\d{3})(\d{4})/, '$1-$2-$3');
+		} else if(value.length === 10) {
+			return value.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+		} else {
+			return value;
+		}
+	},
+	// 계좌번호 하이픈
+	accountNum : function(str) {
+		str = FORM.toNum(str);
+		if (str.length === 11) { //계좌번호가 11자리일 경우
+			return str.substring(0,3) + "-" + str.substring(3,5) + "-" + str.substring(5)
+		} else if (str.length === 12){
+			return str.substring(0,3) + "-" + str.substring(3,5) + "-" + str.substring(5,11) + "-" + str.substring(11)
+		}else if(str.length === 13) { //계좌번호가 13자리일 경우
+			return str.substring(0,3) + "-" + str.substring(3,5) + "-" + str.substring(5,11) + "-" + str.substring(11)
+		} else if (str.length === 14) { //계좌번호가 14자리일 경우
+			return str.substring(0,3) + "-" + str.substring(3,5) + "-" + str.substring(5,11) + "-" + str.substring(11)
+		} else if (str.length === 16){
+			return str.substring(0,3) + "-" + str.substring(3,5) + "-" + str.substring(5,11) + "-" + str.substring(11)
+		} else {
+			return str;
+		}
+	},
+	// 이메일 마스킹
+	emailMask : function(str) {
+		if(COMM.isEmail(str)) {
+			let strLength = str.split('@')[0].length - 3;
+			return str.replace(new RegExp('.(?=.{0,' + strLength + '}@)', 'g'), '*');
+		} else {
+			return str;
+		}
+	},
+	// 이름 마스킹
+	nameMask : function(str) {
+		if (str.length > 2) {
+		    let originName = str.split('');
+
+		    originName.forEach(function(name, i) {
+		      	if (i === 0 || i === originName.length - 1) return;
+	      		originName[i] = '*';
+			});
+
+			let joinName = originName.join();
+
+			return joinName.replace(/,/g, '');
+	  	} else {
+	    	let pattern = /.$/; // 정규식
+    		return str.replace(pattern, '*');
+	  	}
+	},
+	// 휴대폰 번호 마스킹
+	phoneMask : function(str) {
+		let originStr = str; 
+		let phoneStr; 
+		let maskingStr; 
+		
+		if(!originStr){ 
+			return originStr; 
+		} 
+		
+		if (originStr.toString().split('-').length != 3) { 
+			// 1) -가 없는 경우 
+			phoneStr = originStr.length < 11 
+					? originStr.match(/\d{10}/gi) 
+					: originStr.match(/\d{11}/gi);
+			if(!phoneStr){ 
+				return originStr; 
+			} 
+			
+			if(originStr.length < 11) { 
+				// 1.1) 0110000000 
+				maskingStr = originStr.toString()
+							.replace(phoneStr, phoneStr.toString().replace(/(\d{3})(\d{3})(\d{4})/gi,'$1***$3')); 
+			} else { 
+				// 1.2) 01000000000 
+				maskingStr = originStr.toString()
+							.replace(phoneStr, phoneStr.toString().replace(/(\d{3})(\d{4})(\d{4})/gi,'$1****$3')); 
+			} 
+		} else { 
+			// 2) -가 있는 경우 
+			phoneStr = originStr.match(/\d{2,3}-\d{3,4}-\d{4}/gi); 
+			
+			if(!phoneStr){ 
+				return originStr; 
+			}
+			 
+			if(/-[0-9]{3}-/.test(phoneStr)) { 
+				// 2.1) 00-000-0000 
+				maskingStr = originStr.toString()
+							.replace(phoneStr, phoneStr.toString().replace(/-[0-9]{3}-/g, "-***-")); 
+			} else if(/-[0-9]{4}-/.test(phoneStr)) { 
+				// 2.2) 00-0000-0000 
+				maskingStr = originStr.toString().replace(phoneStr, phoneStr.toString().replace(/-[0-9]{4}-/g, "-****-"));
+			} 
+		} 
+		return maskingStr;
+	},
+	// 주민등록번호 마스킹
+	regNumMask : function(str){ 
+		let originStr = str; 
+		let rrnStr; 
+		let maskingStr; 
+		
+		if(!originStr) { 
+			return originStr; 
+		} 
+		
+		rrnStr = originStr.match(/(?:[0-9]{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[1,2][0-9]|3[0,1]))-[1-4]{1}[0-9]{6}\b/gi);
+		
+		if(rrnStr){ 
+			strLength = rrnStr.toString().split('-').length; 
+			maskingStr = originStr.toString().replace(rrnStr,rrnStr.toString().replace(/(-?)([1-4]{1})([0-9]{6})\b/gi,"$1$2******"));
+			
+		}else { 
+			rrnStr = originStr.match(/\d{13}/gi); 
+			
+			if(rrnStr){ 
+				strLength = rrnStr.toString().split('-').length; 
+				maskingStr = originStr.toString().replace(rrnStr,rrnStr.toString().replace(/([0-9]{6})$/gi,"******")); 
+			} else { 
+				return originStr; 
+			} 
+		} 
+		
+		return maskingStr; 
+	},
 }
 
 const DATE = {
