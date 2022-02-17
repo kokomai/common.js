@@ -6,8 +6,8 @@
 
  const REQ = {
 	// loading 함수 정의
-	loading : function() {
-		COMM.loading();
+	loading : function(boo) {
+		COMM.loading(boo);
 	},
     // refresh token 가져오기(localStorage)
     getRToken : function() {
