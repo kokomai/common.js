@@ -209,6 +209,8 @@ data-Ferror에 명시한 글자를 input 아래에 띄워줍니다.
 필요하신 경우 커스터마이징한 함수 이름을 value로 넣으셔도 가능합니다.
 
 ※ 글자수 제한의 경우 maxlength attribute를 사용해주세요
+  -> maxlength의 경우 변환된 양식의 길이로 입력해주시길 바랍니다
+  ex) 핸드폰번호는 원래 11자리이지만 "-"이 2개 들어가므로 13으로 설정
 -->
 <br>
 --- <br>
@@ -249,6 +251,8 @@ Formed input (설명 주석 참고)<br>
 명시하시면 input시, 자동으로 형식을 변환해 줍니다. 주로 금액 콤마, 핸드폰 양식에 사용될 것으로 예상됩니다.
 
 ※ 글자수 제한의 경우 maxlength attribute를 사용해주세요
+  -> maxlength의 경우 변환된 양식의 길이로 입력해주시길 바랍니다
+  ex) 핸드폰번호는 원래 11자리이지만 "-"이 2개 들어가므로 13으로 설정
 -->
 <br>
 --- <br>
@@ -278,12 +282,14 @@ Typed Input (설명 주석 참고)<br>
 ※ 위의 다른 attribute들과 함께 적용이 가능합니다.
 
 ※ 글자수 제한의 경우 maxlength attribute를 사용해주세요
+  -> maxlength의 경우 변환된 양식의 길이로 입력해주시길 바랍니다
+  ex) 핸드폰번호는 원래 11자리이지만 "-"이 2개 들어가므로 13으로 설정
 -->
 <br>
 --- <br>
 숫자만 입력 가능하게 <br>
 <div>
-	<input data-Fform="FORM.phoneNum" data-Ftype="COMM.isNum" maxlength="11"/>
+	<input data-Fform="FORM.phoneNum" data-Ftype="COMM.isNum" maxlength="13"/>
 	<p class="errorText" data-Ferror="핸드폰번호 양식을 입력해주세요."></p>
 </div><br>
 --- <br>
