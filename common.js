@@ -363,9 +363,10 @@
 		});
 		
 		COMM["_validFunc"] = (e) => {
-			let check = new Function("return " + e.target.getAttribute("data-Fvalid") + "('" + e.target.value +"')");
+			let val = e.target.value.replace("'", "").replace("\\", "");
+			let check = new Function("return " + e.target.getAttribute("data-Fvalid") + "('" + val +"')");
 			let onInvalid = e.target.getAttribute("data-Finvalid");
-			if(!(check()) && e.target.value !== "") {
+			if(!(check()) && val !== "") {
 				if(onInvalid && onInvalid !== "") {
 					new Function("return " + e.target.getAttribute("data-Finvalid") + "()")();
 				} else {
@@ -404,8 +405,9 @@
 //		});
 //		
 //		COMM["_formedFunc"] = (e) => {
-//			let form = new Function("return " + e.target.getAttribute("data-Fform") + "('" + e.target.value +"')");
-//			if(e.target.value !== "") {
+//			let val = e.target.value.replace("'", "").replace("\\", "");
+//			let form = new Function("return " + e.target.getAttribute("data-Fform") + "('" + val +"')");
+//			if(val !== "") {
 //				e.target.value = form();
 //			}
 //		}
@@ -422,18 +424,19 @@
 		});
 		
 		COMM["_formedFunc"] = (e) => {
-			let form = new Function("return " + e.target.getAttribute("data-Fform") + "('" + e.target.value +"')");
+			let val = e.target.value.replace("'", "").replace("\\", "");
+			let form = new Function("return " + e.target.getAttribute("data-Fform") + "('" + val +"')");
 			let position = e.target.selectionStart;
-			let length = e.target.value.length;
+			let length = val.length;
 			if(position === length) {
 				e.target.value = form();
 			} else {
 				let formedL = form().length;
-				if(e.target.value.length === formedL) {
+				if(val.length === formedL) {
 					e.target.value = form();
 					e.target.setSelectionRange(position, position);
 				} else {
-					let diff = e.target.value.length - formedL;
+					let diff = val.length - formedL;
 					e.target.value = form();
 					e.target.setSelectionRange(position-diff, position-diff);
 				}
@@ -451,14 +454,16 @@
 		});
 		
 		COMM["_typeFunc"] = (e) => {
-			let check = new Function("return " + e.target.getAttribute("data-Ftype") + "('" + e.data +"')");
+			let val = e.target.value.replace("'", "").replace("\\", "");
+			let keyData = e.data.replace("'", "").replace("\\", "");
+			let check = new Function("return " + e.target.getAttribute("data-Ftype") + "('" + keyData +"')");
 			if(!check()) {
 				let position = e.target.selectionStart;
-				let formedL = e.target.value.replace(e.data, "").length;
-				let originL = e.target.value.length;
+				let formedL = val.replace(keyData, "").length;
+				let originL = val.length;
 				
-				e.target.value = e.target.value.replace(e.data, "");
-				if(e.data) {
+				e.target.value = val.replace(keyData, "");
+				if(keyData) {
 					if(originL !== formedL) {
 						e.target.setSelectionRange(position-1, position-1);
 					} else {
@@ -539,7 +544,7 @@ const FORM = {
     },
 	// 숫자만 반환
 	toNum : function(str) {
-		return str.toString().replace(/[^0-9]/g, "");
+		return str.toString().replace(/[^d]/g, "");
 	},
 	// 핸드폰 번호 하이픈
 	phoneNum : function(str) {
