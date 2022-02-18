@@ -432,11 +432,11 @@
 				e.target.value = form();
 			} else {
 				let formedL = form().length;
-				if(val.length === formedL) {
+				if(length === formedL) {
 					e.target.value = form();
 					e.target.setSelectionRange(position, position);
 				} else {
-					let diff = val.length - formedL;
+					let diff = length - formedL;
 					e.target.value = form();
 					e.target.setSelectionRange(position-diff, position-diff);
 				}
@@ -450,12 +450,15 @@
 	// input에서 특정 타입만 입력 가능하게
 	setInputType : function() { 
 		document.querySelectorAll("input[data-Ftype]").forEach((input) => {
-			input.removeEventListener("input", COMM._typeFunc);	
+			input.removeEventListener("input", COMM._typeFunc);
 		});
 		
 		COMM["_typeFunc"] = (e) => {
 			let val = e.target.value.replace("'", "").replace("\\", "");
-			let keyData = e.data.replace("'", "").replace("\\", "");
+			let keyData = "";
+			if(e.data) {
+				keyData = e.data.replace("'", "").replace("\\", "");
+			}
 			let check = new Function("return " + e.target.getAttribute("data-Ftype") + "('" + keyData +"')");
 			if(!check()) {
 				let position = e.target.selectionStart;
@@ -544,7 +547,7 @@ const FORM = {
     },
 	// 숫자만 반환
 	toNum : function(str) {
-		return str.toString().replace(/[^d]/g, "");
+		return str.toString().replace(/[^0-9]/g, "");
 	},
 	// 핸드폰 번호 하이픈
 	phoneNum : function(str) {
@@ -846,8 +849,6 @@ const DATE = {
 }
 
 // export { COMM, FORM, DATE }
-
-
 
 // test 영역 .. live server 라는 확장 프로그램 필요
 let d = new Date().getTime();
