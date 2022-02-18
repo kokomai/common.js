@@ -397,7 +397,7 @@
 			
 		})
 	},
-	// input의 자동 formatting 추가
+	// input의 자동 formatting 추가(focusout 시)
 //	setFormedInput : function() {
 //		document.querySelectorAll("input[data-Fform]").forEach((input) => {
 //			input.removeEventListener("focusout", COMM._formedFunc);	
@@ -415,6 +415,7 @@
 //			
 //		})
 //	},
+	// input의 자동 formatting 추가
 	setFormedInput : function() {
 		document.querySelectorAll("input[data-Fform]").forEach((input) => {
 			input.removeEventListener("input", COMM._formedFunc);	
