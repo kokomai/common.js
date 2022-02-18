@@ -454,9 +454,16 @@
 			let check = new Function("return " + e.target.getAttribute("data-Ftype") + "('" + e.data +"')");
 			if(!check()) {
 				let position = e.target.selectionStart;
+				let formedL = e.target.value.replace(e.data, "").length;
+				let originL = e.target.value.length;
+				
 				e.target.value = e.target.value.replace(e.data, "");
 				if(e.data) {
-					e.target.setSelectionRange(position-1, position-1)	
+					if(originL !== formedL) {
+						e.target.setSelectionRange(position-1, position-1);
+					} else {
+						e.target.setSelectionRange(position, position);
+					}	
 				}
 			} 
 		}
