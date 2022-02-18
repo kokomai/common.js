@@ -245,8 +245,8 @@ COMM.isPhoneNum 테스트 <br>
 ============== <br>
 Formed input (설명 주석 참고)<br>
 <!-- 
-※ formed input의 경우, 아래와 같이 data-Fform에 해당 input을 변환할 함수를
-명시하시면 focusout시, 자동으로 형식을 변환해 줍니다. 주로 금액 콤마, 핸드폰 양식에 사용될 것으로 예상됩니다.
+※ formed input의 경우, 아래와 같이 data-Fform에 해당 input 내 value를 변환할 함수를
+명시하시면 input시, 자동으로 형식을 변환해 줍니다. 주로 금액 콤마, 핸드폰 양식에 사용될 것으로 예상됩니다.
 
 ※ 글자수 제한의 경우 maxlength attribute를 사용해주세요
 -->
@@ -254,7 +254,7 @@ Formed input (설명 주석 참고)<br>
 --- <br>
 핸드폰 양식 자동 변환 테스트 <br>
 <div>
-	<input data-Fform="FORM.phoneNum" data-Fvalid="COMM.isPhoneNum" data-Ffocus="true" maxlength="11"/>
+	<input data-Fform="FORM.phoneNum" data-Fvalid="COMM.isPhoneNum" maxlength="13"/>
 	<p class="errorText" data-Ferror="핸드폰번호 양식을 입력해주세요."></p>
 </div><br>
 --- <br>
@@ -265,9 +265,38 @@ Formed input (설명 주석 참고)<br>
 --- <br>
 금액 양식 자동 변환 테스트 <br>
 <div>
-	<input data-Fform="FORM.money2Comma"/>
+	<input data-Fform="FORM.money2Comma" data-Ftype="COMM.isNum"/>
 	<p class="errorText" data-Ferror="숫자를 입력해주세요."></p>
 </div><br>
+============== <br>
+============== <br>
+Typed Input (설명 주석 참고)<br>
+<!-- 
+※ typed input의 경우, 아래와 같이 data-Ftype에 해당 input에서 체크해야 할 함수 (COMM.isKor 등..) 
+명시하시면 해당 함수에 위배되는 key press의 경우 무시를 하게끔 처리합니다.
+
+※ 위의 다른 attribute들과 함께 적용이 가능합니다.
+
+※ 글자수 제한의 경우 maxlength attribute를 사용해주세요
+-->
+<br>
+--- <br>
+숫자만 입력 가능하게 <br>
+<div>
+	<input data-Fform="FORM.phoneNum" data-Ftype="COMM.isNum" maxlength="11"/>
+	<p class="errorText" data-Ferror="핸드폰번호 양식을 입력해주세요."></p>
+</div><br>
+--- <br>
+한글만 입력 가능하게 <br>
+<div>
+	<input data-Ftype="COMM.isKor"/>
+</div><br>
+--- <br>
+영어 + 숫자만 입력 가능하게 <br>
+<div>
+	<input data-Ftype="COMM.isEngNum"/>
+</div><br>
+
 ============== <br>
 <th:block>
 </html>

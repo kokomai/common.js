@@ -398,51 +398,79 @@
 		})
 	},
 	// input의 자동 formatting 추가
+//	setFormedInput : function() {
+//		document.querySelectorAll("input[data-Fform]").forEach((input) => {
+//			input.removeEventListener("focusout", COMM._formedFunc);	
+//		});
+//		
+//		COMM["_formedFunc"] = (e) => {
+//			let form = new Function("return " + e.target.getAttribute("data-Fform") + "('" + e.target.value +"')");
+//			if(e.target.value !== "") {
+//				e.target.value = form();
+//			}
+//		}
+//		
+//		document.querySelectorAll("input[data-Fform]").forEach((input) => {
+//			input.addEventListener("focusout", COMM._formedFunc);
+//			
+//		})
+//	},
 	setFormedInput : function() {
 		document.querySelectorAll("input[data-Fform]").forEach((input) => {
-			input.removeEventListener("focusout", COMM._formedFunc);	
+			input.removeEventListener("input", COMM._formedFunc);	
 		});
 		
 		COMM["_formedFunc"] = (e) => {
 			let form = new Function("return " + e.target.getAttribute("data-Fform") + "('" + e.target.value +"')");
-			if(e.target.value !== "") {
+			let position = e.target.selectionStart;
+			let length = e.target.value.length;
+			if(position === length) {
 				e.target.value = form();
+			} else {
+				let formedL = form().length;
+				if(e.target.value.length === formedL) {
+					e.target.value = form();
+					e.target.setSelectionRange(position, position);
+				} else {
+					let diff = e.target.value.length - formedL;
+					e.target.value = form();
+					e.target.setSelectionRange(position-diff, position-diff);
+				}
 			}
 		}
 		
 		document.querySelectorAll("input[data-Fform]").forEach((input) => {
-			input.addEventListener("focusout", COMM._formedFunc);
-			
-//			let position = 0;
-//			
-//			input.addEventListener("keydown", (e) => {
-//				if(e.key === "Backspace" || e.key === "Delete") {
-//					position = input.selectionStart;
-//				}
-//			});
-//			
-//			input.addEventListener("keyup", (e)=> {
-//				let originL = e.target.value.length;
-//				let formedL = FORM.toNum(e.target.value).length;
-//				let diff = formedL - originL;
-//				
-//				if((e.key === "Backspace" || e.key === "Delete")) {
-//					if(formedL === originL) {
-//						// 길이가 같으면 아무것도 안함
-//						console.log("same");
-////						input.setSelectionRange(position, position);	
-//					} else {
-//						console.log("diff");
-//						// 길이가 다르면 빼줌
-//						input.setSelectionRange(position-1, position-1);
-//					}
-//				}
-//			});
+			input.addEventListener("input", COMM._formedFunc);
+		})
+	},
+	// input에서 특정 타입만 입력 가능하게
+	setInputType : function() { 
+		document.querySelectorAll("input[data-Ftype]").forEach((input) => {
+			input.removeEventListener("input", COMM._typeFunc);	
+		});
+		
+		COMM["_typeFunc"] = (e) => {
+			let check = new Function("return " + e.target.getAttribute("data-Ftype") + "('" + e.data +"')");
+			if(!check()) {
+				let position = e.target.selectionStart;
+				e.target.value = e.target.value.replace(e.data, "");
+				if(e.data) {
+					e.target.setSelectionRange(position-1, position-1)	
+				}
+			} 
+		}
+		
+		document.querySelectorAll("input[data-Ftype]").forEach((input) => {
+			input.addEventListener("input", COMM._typeFunc);
 		})
 	}
 }
 
 const FORM = {
+	// 공백제거 함수
+	delSpace : function (str) {
+		return  str.replace(/ /g, '');
+	},
     // 금액에 콤마 추가
     money2Comma : function(num) {
 		num = COMM.replaceAll(num.toString(), ",", "");
