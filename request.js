@@ -5,6 +5,8 @@
  */
 
  const REQ = {
+	// 팝업 html을 저장해 놓는 위치
+	popupFolder : "./",
 	// token 값을 무시하고 페이지 이동하고 싶은 경우 여기에 해당 url 등록 
 	ignoreList : [
 		"/"
@@ -259,11 +261,11 @@
         return JSON.parse(sessionStorage.getItem("pageData"));
     },
 	// 팝업 보여주기
-	// 팝업 파일 경로는 반드시 static/popup 안으로..
+	// 팝업 파일 경로는 맨위에 정의
 	// 하위 파일 경로 및 파일명 -> /login/test(login 폴더에 있는 test.html)
 	openPopup : function(file) {
 		var el = document.getElementById("__popup");
-		var path = "/popup" + file + ".html";
+		var path = REQ.popupFolder + file + ".html";
 		if (path) {
 	        var xhttp = new XMLHttpRequest();
 	        xhttp.onreadystatechange = function () {

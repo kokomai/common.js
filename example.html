@@ -1,41 +1,72 @@
 <!DOCTYPE html>
-<!-- 아래 html 내에 있는 설정들을 꼭 같이 옮기셔야 합니다. -->
-<!-- th:with="metaTitle='타이틀'" 타이틀을 변경하실 수 있습니다. -->
-<html
-	xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorator="~{layout/defaultLayout}"
-	th:with="metaTitle='예시 타이틀'"
->
-<!-- 아래의 head 태그 내에서는 해당 페이지에서 실행하는 비지니스 js 로직 파일을 선언합니다. -->
-<!-- 반드시 아래의 양식대로 작성해주셔야 합니다. -->
+<html>
+
 <head>
-	<script defer th:src="@{/js/example/example.js}"></script>
+	<!-- 
+		개떡같긴 하지만 이 example은 jquery와 함께 사용했습니다 
+		아래 예시 코드를 사용한 프로젝트에서 jquery를 사용했기 때문에..
+		후에 찰떡같은 react버전도 예시로 올려야겠네요
+		다행히도 example.js 이외에 모두 vanilla로 작성했습니다.
+	-->
+	<script defer src="./jquery-3.6.0.min.js"></script>
+	<script defer src="./common.js"></script>
+	<script defer src="./request.js"></script>
+	<script defer src="./example.js"></script>
+	<script defer src="./execute.js"></script>
+	<link rel="stylesheet" href="./common.css">
 </head>
-<!-- 본문이 들어가는 부분입니다. 퍼블리싱 부분에서 제공한 html을 붙이시면 됩니다. -->
-<th:block layout:fragment="content">
+<body>
 <h2>※ 자세한 javascript 관련 사항은 example.js 파일 참고</h2>
 <h4>===============================</h4>
 <h4>
-	기본적인 구조는 defaultLayout.html을 통해 짜여져 있습니다.
-	해당 layout을 참고하시어, 수정해야 할 변경 사항들은 해당 html에서 수정하시면 됩니다.
-	각종 공통 script, css의 file injection(=import)은 head.html에서 이루어집니다.
+	loading, alert, confirm 호출은 해당 엘리먼트를 선언하시고 꾸며야 합니다
+	여기서는 그냥 예시이기 때문에 대충 때려넣도록 하겠습니다.
 </h4>
 <h4>===============================</h4>
---- <br>
-ajax 테스트<br>
+<!-- component 영역 -->
 <div>
-	<input id="test">
-	<button id="submitBtn">submit</button>
-	<div id="submitResult"></div>
-</div><br>
---- <br>
-동기화된 ajax 테스트(순차적으로 호출.. 반드시 js 참조)<br>
-<div>
-	<button id="syncSubmitBtn">순차적 submit</button>
-	<button id="asyncSubmitBtn">비동기식 submit</button>
-	<div>※js참고하시고 로그확인 해주세요</div>
-</div><br>
+	<div class="loading" id="__loading" style="display: none;">NOW LOADING..</div>
+	<div class="pageLoading" id="__pageLoading" style="display: block;">PAGE LOADING..</div>
+	<div id="__alert" style="display:none;">
+		<div class="alert">
+			<div class="alert-bg">
+				<div class="alert-cont">
+					<h2 id="__title">안내</h2>
+					<p id="__msg"></p>
+					<button type="button" id="__confirmBtn" class="">확인</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="__confirm" style="display:none;">
+		<div class="alert">
+			<div class="alert-bg">
+				<div class="alert-cont">
+					<h2 id="__title">안내</h2>
+					<p id="__msg"></p>
+				</div>
+				<button type="button" id="__cancelBtn" class="">취소</button>
+				<button type="button" id="__confirmBtn" class="">확인</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- component 영역 끝 -->
+	<div id="__popup" style="display:none;"></div>
+	--- <br>
+	ajax 테스트<br>
+	<div>
+		<input id="test">
+		<button id="submitBtn">submit</button>
+		<div id="submitResult"></div>
+	</div><br>
+	--- <br>
+	동기화된 ajax 테스트(순차적으로 호출.. 반드시 js 참조)<br>
+	<div>
+		<button id="syncSubmitBtn">순차적 submit</button>
+		<button id="asyncSubmitBtn">비동기식 submit</button>
+		<div>※js참고하시고 로그확인 해주세요</div>
+	</div><br>
 ---<br>
 페이지 이동<br>
 <div>
@@ -304,5 +335,5 @@ Typed Input (설명 주석 참고)<br>
 </div><br>
 
 ============== <br>
-<th:block>
+</body>
 </html>
