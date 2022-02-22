@@ -5,6 +5,10 @@
  */
 
  const REQ = {
+	// token 값을 무시하고 페이지 이동하고 싶은 경우 여기에 해당 url 등록 
+	ignoreList : [
+		"/"
+	],
 	// loading 함수 정의
 	loading : function(boo) {
 		COMM.loading(boo);
@@ -108,6 +112,7 @@
                     , dataType: "JSON"
                     , beforeSend: REQ.rTokenHeader
                     , success: function(res, stat, req) {
+						REQ.setAToken(req.getResponseHeader('X-AUTH-ATOKEN'));
                         successF(res, stat, req);
                         resolve(res, stat, req);
 
@@ -188,9 +193,10 @@
                     , dataType: "JSON"
                     , beforeSend: REQ.rTokenHeader
                     , success: function(res, stat, req) {
+						REQ.setAToken(req.getResponseHeader('X-AUTH-ATOKEN'));
                         successF(res, stat, req);
                         resolve(res, stat, req);
-
+						
 						if(isHideLoading) {
 							REQ.loading(false);	
 						}
@@ -218,19 +224,31 @@
             if(data !== undefined && data !== null && typeof data === "object") {
                 sessionStorage.setItem("pageData", JSON.stringify(data));
             }
-
-			location.href = url;
-//            $.ajax({
-//                url: url
-//                , data: {}
-//                , type: "GET"
-//                , async : true
-//                , beforeSend: REQ.rTokenHeader
-//				, success : function(res, stat, req) {
-//					location.href = url;
-//				}
-//            });
 			
+			// 토큰 인증 없이 해당 view로 이동
+			// 만일 url을 추가로 등록하고 싶은 경우 ignoreList에 String 추가 요망
+			if(REQ.ignoreList.includes(url)) {
+				location.href = url;
+			} else {
+				// checkLogin을 호출하여 토큰 값이 없거나 만료시 login page로 리턴
+				$.ajax({
+	                url: "/checkLogin"
+	                , data: {}
+	                , type: "POST"
+	                , async : true
+	                , beforeSend: REQ.rTokenHeader
+					, success : function() {
+						location.href = "/view" + url;
+					}
+					, error : function(res) {
+						if(res.status === 401) {
+							sessionStorage.setItem("nextPage", url);
+							location.href = "/view/login";
+						}
+					}
+	            });
+				
+			}
         } catch(e) {
             console.log(e);
         }

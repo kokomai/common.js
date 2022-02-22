@@ -42,7 +42,8 @@
     // 비어있는 값인지 체크
     // 공백, null, undefined, {}, []이 아닐시, true 리턴
     isNotEmpty : function(obj) {
-        if(typeof obj === "null" 
+    	if(!obj
+		|| typeof obj === "null" 
         || typeof obj === "undefined" 
         || obj === ""
         || (typeof obj === "object" 
