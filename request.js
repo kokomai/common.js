@@ -281,6 +281,9 @@
 	    	let aToken = REQ.getAToken();
 	
 	        xhttp.open('GET', path + "?"+ parseInt(Date.now()/1000), true);
+			
+			// 해당 html 파일의 charset이 euc-kr일 때 아래 설정을 해줌
+			// xhttp.overrideMimeType("text/html; charset=EUC-KR");
 	        xhttp.setRequestHeader("X-AUTH-RTOKEN", rToken);
 	        xhttp.setRequestHeader("X-AUTH-ATOKEN", aToken);
 	        xhttp.send();
