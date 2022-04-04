@@ -92,10 +92,10 @@
 			if(options.error) {
 				errorF = options.error
 			}
-			if(options.noLoading) {
+			if(options.noLoading != undefined || options.noLoading != null) {
 				isLoading = !options.noLoading
 			}
-			if(options.keepLoading) {
+			if(options.keepLoading != undefined || options.keepLoading != null) {
 				isHideLoading = !options.keepLoading
 			}
 		}
@@ -174,10 +174,10 @@
 			if(options.error) {
 				errorF = options.error
 			}
-			if(options.noLoading) {
+			if(options.noLoading != undefined || options.noLoading != null) {
 				isLoading = !options.noLoading
 			}
-			if(options.keepLoading) {
+			if(options.keepLoading != undefined || options.keepLoading != null) {
 				isHideLoading = !options.keepLoading
 			}
 		}
