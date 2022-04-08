@@ -111,7 +111,6 @@
                     , data: params
                     , type: "GET"
                     , async : true
-                    , dataType: "JSON"
                     , beforeSend: REQ.rTokenHeader
                     , success: function(res, stat, req) {
 						REQ.setAToken(req.getResponseHeader('X-AUTH-ATOKEN'));
@@ -192,7 +191,6 @@
                     , data: params
                     , type: "POST"
                     , async : true
-                    , dataType: "JSON"
                     , beforeSend: REQ.rTokenHeader
                     , success: function(res, stat, req) {
 						REQ.setAToken(req.getResponseHeader('X-AUTH-ATOKEN'));
