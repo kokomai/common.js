@@ -256,11 +256,12 @@
 	// 이전 페이지에서 보낸 데이터 가져오기
     // 페이지 이동시 데이터를 설정하는 것은 REQ.location을 사용
     getPageData : function() {
-        let obj = JSON.parse(sessionStorage.getItem("pageData"));
-        // 한번 사용 후 지워줘야 함
-        sessionStorage.removeItem("pageData");
-		return obj;  
+		return JSON.parse(sessionStorage.getItem("pageData"));
     },
+	// 이전 페이지에서 보낸 데이터 지워주기
+	removePageData : function() {
+        sessionStorage.removeItem("pageData");
+	},
 	// 팝업 보여주기
 	// 팝업 파일 경로는 맨위에 정의
 	// 하위 파일 경로 및 파일명 -> /login/test(login 폴더에 있는 test.html)
