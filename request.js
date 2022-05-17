@@ -267,7 +267,7 @@
 	// 팝업 보여주기
 	// 팝업 파일 경로는 맨위에 정의
 	// 하위 파일 경로 및 파일명 -> /login/test(login 폴더에 있는 test.html)
-	openPopup : function(file) {
+	openPopup: function(popupFile, jsFile, closeCallback, showCallback) {
 		var el = document.getElementById("__popup");
 		var path = REQ.popupFolder + popupFile + REQ.popupType;
 		if (path) {
@@ -275,9 +275,17 @@
 			xhttp.onreadystatechange = function() {
 				if (this.readyState == 4
 					&& this.status == 200) {
-					el.innerHTML = this.responseText;
+					el.innerHTML += this.responseText;
 					el.style.display = "block";
+					if(jsFile) {
+						var script = document.createElement("script");
+						script.src = REQ.popupJsFolder + jsFile;
+						script.onload = function() {
+						};
+						el.appendChild(script);
+					}
 				}
+				
 			};
 
 			xhttp.open('GET', path + "?" + parseInt(Date.now() / 1000), true);
@@ -286,18 +294,28 @@
 			xhttp.send();
 		}
 		
-		if(jsFile) {
-			var script = document.createElement("script");
-			script.src = REQ.popupJsFolder + jsFile;
-			script.onload = function() {
-				console.log("jsLoad success");
-			};
-			el.appendChild(script);
+		
+		if(typeof closeCallback === "function") {
+			REQ["_popupCloseCallback"] = closeCallback;
+		} else {
+			REQ["_popupCloseCallback"] = function() {console.log("popup close callback")}
 		}
+		
+		if(typeof showCallback === "function") {
+			showCallback();
+		}
+		
 	},
 	// 팝업 닫기
-	closePopup : function() {
+	closePopup: function(data) {
 		document.getElementById("__popup").style.display = "none";
+		document.getElementById("__popup").innerHTML = "";
+		if(typeof REQ["_popupCloseCallback"] === 'function') {
+			REQ["_popupCloseCallback"](data);
+			REQ["_popupCloseCallback"] = null;
+		} else {
+			console.log(data);
+		}
 	},
 	// 팝업 닫기 이벤트를 id로 binding
 	// 부모 js에서 이를 셋팅해주면 팝업 닫칠 시 callback 설정도 가능
