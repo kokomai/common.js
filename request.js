@@ -6,7 +6,9 @@
 
  const REQ = {
 	// 팝업 html을 저장해 놓는 위치
-	popupFolder : "./",
+	popupFolder: "/static/popup/",
+	popupJsFolder: "/static/popup/popupJs/",
+	popupType: ".html",
 	// token 값을 무시하고 페이지 이동하고 싶은 경우 여기에 해당 url 등록 
 	ignoreList : [
 		"/"
@@ -267,29 +269,31 @@
 	// 하위 파일 경로 및 파일명 -> /login/test(login 폴더에 있는 test.html)
 	openPopup : function(file) {
 		var el = document.getElementById("__popup");
-		var path = REQ.popupFolder + file + ".html";
+		var path = REQ.popupFolder + popupFile + REQ.popupType;
 		if (path) {
-	        var xhttp = new XMLHttpRequest();
-	        xhttp.onreadystatechange = function () {
-	            if (this.readyState == 4 
-					&& this.status == 200
-					&& !this.responseURL.includes("login.view") ) {
-	                el.innerHTML = this.responseText;
+			var xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+				if (this.readyState == 4
+					&& this.status == 200) {
+					el.innerHTML = this.responseText;
 					el.style.display = "block";
-	            }
-	        };
-	
-			let rToken = REQ.getRToken();
-	    	let aToken = REQ.getAToken();
-	
-	        xhttp.open('GET', path + "?"+ parseInt(Date.now()/1000), true);
-			
-			// 해당 html 파일의 charset이 euc-kr일 때 아래 설정을 해줌
-			// xhttp.overrideMimeType("text/html; charset=EUC-KR");
-	        xhttp.setRequestHeader("X-AUTH-RTOKEN", rToken);
-	        xhttp.setRequestHeader("X-AUTH-ATOKEN", aToken);
-	        xhttp.send();
-	    }
+				}
+			};
+
+			xhttp.open('GET', path + "?" + parseInt(Date.now() / 1000), true);
+	        xhttp.overrideMimeType("text/html; charset=UTF-8")
+	        xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=utf-8');
+			xhttp.send();
+		}
+		
+		if(jsFile) {
+			var script = document.createElement("script");
+			script.src = REQ.popupJsFolder + jsFile;
+			script.onload = function() {
+				console.log("jsLoad success");
+			};
+			el.appendChild(script);
+		}
 	},
 	// 팝업 닫기
 	closePopup : function() {
