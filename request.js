@@ -267,20 +267,39 @@
 	// 팝업 보여주기
 	// 팝업 파일 경로는 맨위에 정의
 	// 하위 파일 경로 및 파일명 -> /login/test(login 폴더에 있는 test.html)
+	/*
+		params {
+			popupFile : 팝업 파일명
+			jsFile : 해당 팝업에서 실행할 js 명
+			closeCallback : 팝업 닫을 때 실행할 함수
+			showCallback : 팝업이 보여질 때 실핼할 함수	
+		}
+	 */
 	openPopup: function(popupFile, jsFile, closeCallback, showCallback) {
 		var el = document.getElementById("__popup");
 		var path = REQ.popupFolder + popupFile + REQ.popupType;
 		if (path) {
 			var xhttp = new XMLHttpRequest();
+
+			// popup html / jsp가 삽입 성공시 실행할 후처리
 			xhttp.onreadystatechange = function() {
 				if (this.readyState == 4
 					&& this.status == 200) {
 					el.innerHTML += this.responseText;
 					el.style.display = "block";
+
+					// 팝업에서 실행할 js파일 inject
 					if(jsFile) {
 						var script = document.createElement("script");
 						script.src = REQ.popupJsFolder + jsFile;
+
+						// inject한 스크립트가 로드 성공시 실행
 						script.onload = function() {
+							if(typeof closeCallback === "function") {
+								REQ["_popupCloseCallback"] = closeCallback;
+							} else {
+								REQ["_popupCloseCallback"] = function() {console.log("popup close callback")}
+							}
 						};
 						el.appendChild(script);
 					}
@@ -292,13 +311,6 @@
 	        xhttp.overrideMimeType("text/html; charset=UTF-8")
 	        xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded; charset=utf-8');
 			xhttp.send();
-		}
-		
-		
-		if(typeof closeCallback === "function") {
-			REQ["_popupCloseCallback"] = closeCallback;
-		} else {
-			REQ["_popupCloseCallback"] = function() {console.log("popup close callback")}
 		}
 		
 		if(typeof showCallback === "function") {
