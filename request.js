@@ -17,17 +17,17 @@
 	loading : function(boo) {
 		COMM.loading(boo);
 	},
-    // refresh token 가져오기(localStorage)
+    // refresh token 가져오기(sessionStorage)
     getRToken : function() {
-        return localStorage.getItem("rToken");
+        return sessionStorage.getItem("rToken");
     },
-    // refresh token 셋팅(localStorage)
+    // refresh token 셋팅(sessionStorage)
     setRToken : function(tokn) {
-        localStorage.setItem("rToken", tokn);
+        sessionStorage.setItem("rToken", tokn);
     },
-    // refresh token 삭제(localStorage)
+    // refresh token 삭제(sessionStorage)
     delRToken : function() {
-        localStorage.removeItem("rToken");
+        sessionStorage.removeItem("rToken");
     },
     // access token 가져오기(sessionStorage)
     getAToken : function() {

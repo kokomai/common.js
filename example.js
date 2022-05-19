@@ -18,7 +18,7 @@
 /*
 	일반 jquery 작성과 동일합니다.
 	하지만 document가 준비 되기 전 특별히 실행해야할 사항들이 공통적으로 존재한다면
-	hug-execute.js에서 실행하거나 binding 해주세요.
+	execute.js에서 실행하거나 binding 해주세요.
 */
 // https://jeonghwan-kim.github.io/dev/2020/06/08/html5-form-validation.html
 // -> html form 커스터마이징
@@ -49,7 +49,7 @@ $(document).ready(function(){
 		
 		※ 이 서버가 개발서버인가 로컬인가? 아님 운영인가?
 		COMM.isDevMode를 통해 사용 가능합니다
-		다만 개발서버의 경우 hug-common.js 최상단에 선언된
+		다만 개발서버의 경우 common.js 최상단에 선언된
 		devUrl를 변경해주셔야 합니다.
 	*/
 	/*
@@ -60,7 +60,7 @@ $(document).ready(function(){
 		obj["test"] = $("#test").val();
 		/*
 			REQ.post 혹은 get을 통해 post, get을 호출합니다.
-			자세한 설명은 hug-request.js의 주석을 참고해주세요.
+			자세한 설명은 request.js의 주석을 참고해주세요.
 		*/
 		REQ.post({
 			url: "https://httpbin.org/post"
@@ -177,7 +177,7 @@ $(document).ready(function(){
 			/static/popup내에 있는 div로 구성된 html을 popup형식으로 보여줍니다.
 			단 해당 html은 <html><head><body>등의 기초적인 tag가 빠진
 			해당 팝업의 div의 방식으로 들어가 있어야 합니다. 예시는 test_popup을 참고하십시오
-			사용법은 hug-request.js 내에 openPopup의 주석을 참고해주세요.
+			사용법은 request.js 내에 openPopup의 주석을 참고해주세요.
 		*/
 		REQ.openPopup('/test_popup');
 		
