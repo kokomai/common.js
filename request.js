@@ -1,5 +1,5 @@
 /**
- * jquery + ajax + jwt 토큰 관련 함수
+ * fetch(jquery + ajax) + jwt 토큰 관련 함수
  * @author : coding-orca
  * All copyright reserved by https://github.com/kokomai
  */
@@ -13,6 +13,8 @@
 	ignoreList : [
 		"/"
 	],
+	checkLoginUrl: "/checkLogin",
+	loginPage: "/view/login",
 	// loading 함수 정의
 	loading : function(boo) {
 		COMM.loading(boo);
@@ -56,7 +58,7 @@
         xhr.setRequestHeader("X-AUTH-RTOKEN", rToken);
         xhr.setRequestHeader("X-AUTH-ATOKEN", aToken);
     },
-    // get ajax
+    // get request
 	/*
 		options : {
 			url : 요청 url
@@ -66,7 +68,7 @@
 			noLoading : true
 				-> true 설정시, loading 없이 호출
 			keepLoading : true 
-				-> 여러번 비동기로 호출 시 앞서 호출한 ajax가 loading을 가리지 않게 하기 
+				-> 여러번 비동기로 호출 시 앞서 호출한 요청이 loading을 가리지 않게 하기 
 		}
 	*/
     get : function(options) {
@@ -107,7 +109,33 @@
 		}
 		
         try {
-            return new Promise((resolve, reject) => {
+			return fetch(
+				url,
+				{
+					method: 'GET',
+					headers: {
+						"Content-type" : "application/json",
+						"X-AUTH-RTOKEN" : REQ.getRToken(),
+						"X-AUTH-ATOKEN" : REQ.getAToken()
+					},
+					body: JSON.stringify(params)
+				}
+			).then((res) => {
+				REQ.setAToken(res.headers.get("X-AUTH-ATOKEN"));
+				successF(res);
+
+				if(isHideLoading) {
+					REQ.loading(false);	
+				}
+			}).catch((err) =>{
+				errorF(err);
+
+				if(isHideLoading) {
+					REQ.loading(false);	
+				}
+			});
+			/*
+			 * new Promise((resolve, reject) => {
                 $.ajax({
                     url: url
                     , data: params
@@ -132,12 +160,12 @@
 						}
                     }
                 });
-            });
+            }); */
         } catch(e) {
             console.error(e);
         }
     },
-    // post ajax
+    // post request
 	/*
 		options : {
 			url : 요청 url
@@ -147,7 +175,7 @@
 			noLoading : true
 				-> true 설정시, loading 없이 호출
 			keepLoading : true 
-				-> 여러번 비동기로 호출 시 앞서 호출한 ajax가 loading을 가리지 않게 하기
+				-> 여러번 비동기로 호출 시 앞서 호출한 요청이 loading을 가리지 않게 하기
 		}
 	*/
     post : function(options) {
@@ -187,7 +215,32 @@
 			REQ.loading();
 		}
         try {
-            return new Promise((resolve, reject) => {
+            return fetch(
+				url,
+				{
+					method: 'POST',
+					headers: {
+						"Content-type" : "application/json",
+						"X-AUTH-RTOKEN" : REQ.getRToken(),
+						"X-AUTH-ATOKEN" : REQ.getAToken()
+					},
+					body: JSON.stringify(params)
+				}
+			).then((res) => {
+				REQ.setAToken(res.headers.get("X-AUTH-ATOKEN"));
+				successF(res);
+
+				if(isHideLoading) {
+					REQ.loading(false);	
+				}
+			}).catch((err) =>{
+				errorF(err);
+
+				if(isHideLoading) {
+					REQ.loading(false);	
+				}
+			});
+			/* new Promise((resolve, reject) => {
                 $.ajax({
                     url: url
                     , data: params
@@ -213,6 +266,7 @@
                     }
                 });
             });
+			*/
         } catch(e) {
             console.error(e);
         }
@@ -233,22 +287,41 @@
 				location.href = url;
 			} else {
 				// checkLogin을 호출하여 토큰 값이 없거나 만료시 login page로 리턴
-				$.ajax({
-	                url: "/checkLogin"
-	                , data: {}
-	                , type: "POST"
-	                , async : true
-	                , beforeSend: REQ.rTokenHeader
-					, success : function() {
-						location.href = "/view" + url;
+				fetch(
+					REQ.checkLoginUrl,
+					{
+						method: 'POST',
+						headers: {
+							"Content-type" : "application/json",
+							"X-AUTH-RTOKEN" : REQ.getRToken(),
+							"X-AUTH-ATOKEN" : REQ.getAToken()
+						},
+						body: JSON.stringify({})
 					}
-					, error : function(res) {
-						if(res.status === 401) {
-							sessionStorage.setItem("nextPage", url);
-							location.href = "/view/login";
-						}
+				).then((res) => {
+					location.href = "/view" + url;
+				}).catch((err) =>{
+					if(res.status === 401) {
+						sessionStorage.setItem("nextPage", url);
+						location.href = loginPage;
 					}
-	            });
+				});
+				// $.ajax({
+	            //     url: "/checkLogin"
+	            //     , data: {}
+	            //     , type: "POST"
+	            //     , async : true
+	            //     , beforeSend: REQ.rTokenHeader
+				// 	, success : function() {
+				// 		location.href = "/view" + url;
+				// 	}
+				// 	, error : function(res) {
+				// 		if(res.status === 401) {
+				// 			sessionStorage.setItem("nextPage", url);
+				// 			location.href = "/view/login";
+				// 		}
+				// 	}
+	            // });
 				
 			}
         } catch(e) {
