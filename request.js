@@ -102,6 +102,10 @@
 			if(options.keepLoading != undefined || options.keepLoading != null) {
 				isHideLoading = !options.keepLoading
 			}
+			// ajax 사용시 활성화
+			// if (options.async != undefined || options.async != null) {
+			// 	async = options.async
+			// }
 		}
 		
 		if(isLoading) {
@@ -135,32 +139,32 @@
 				}
 			});
 			/*
-			 * new Promise((resolve, reject) => {
-                $.ajax({
-                    url: url
-                    , data: params
-                    , type: "GET"
-                    , async : true
-                    , beforeSend: REQ.rTokenHeader
-                    , success: function(res, stat, req) {
-						REQ.setAToken(req.getResponseHeader('X-AUTH-ATOKEN'));
-                        successF(res, stat, req);
-                        resolve(res, stat, req);
+				$.ajax({
+					url: url
+					, data: params
+					, type: "GET"
+					, async: async
+					, success: function(res, stat, req) {
+						successF(res, stat, req);
 
-						if(isHideLoading) {
-							REQ.loading(false);	
+						if (isHideLoading) {
+							REQ.loading(false);
 						}
-                    }
-                    , error : function(res) {
-                        errorF(res);
-                        reject(res);
+					}
+					, error: function(res) {
+						errorF(res);
 
-						if(isHideLoading) {
-							REQ.loading(false);	
+						if (res.status === 403) {
+							alert("세션이 끊겼습니다.");
+							location.href = "/";
 						}
-                    }
-                });
-            }); */
+
+						if (isHideLoading) {
+							REQ.loading(false);
+						}
+					}
+				});
+			*/
         } catch(e) {
             console.error(e);
         }
@@ -209,11 +213,16 @@
 			if(options.keepLoading != undefined || options.keepLoading != null) {
 				isHideLoading = !options.keepLoading
 			}
+			// ajax 사용시 활성화
+			// if (options.async != undefined || options.async != null) {
+			// 	async = options.async
+			// }
 		}
 		
 		if(isLoading) {
 			REQ.loading();
 		}
+
         try {
             return fetch(
 				url,
@@ -240,32 +249,32 @@
 					REQ.loading(false);	
 				}
 			});
-			/* new Promise((resolve, reject) => {
-                $.ajax({
-                    url: url
-                    , data: params
-                    , type: "POST"
-                    , async : true
-                    , beforeSend: REQ.rTokenHeader
-                    , success: function(res, stat, req) {
-						REQ.setAToken(req.getResponseHeader('X-AUTH-ATOKEN'));
-                        successF(res, stat, req);
-                        resolve(res, stat, req);
-						
-						if(isHideLoading) {
-							REQ.loading(false);	
-						}
-                    }
-                    , error : function(res) {
-                        errorF(res);
-                        reject(res);
+			/* 
+				$.ajax({
+					url: url
+					, data: params
+					, type: "POST"
+					, async: async
+					, success: function(res, stat, req) {
+						successF(res, stat, req);
 
-						if(isHideLoading) {
-							REQ.loading(false);	
+						if (isHideLoading) {
+							REQ.loading(false);
 						}
-                    }
-                });
-            });
+					}
+					, error: function(res) {
+						errorF(res);
+
+						if (res.status === 403) {
+							alert("세션이 끊겼습니다.");
+							location.href = "/";
+						}
+
+						if (isHideLoading) {
+							REQ.loading(false);
+						}
+					}
+				});
 			*/
         } catch(e) {
             console.error(e);
@@ -412,13 +421,13 @@
 	
 		document
 		.addEventListener('click', function (e) {
-		    if(e.target
+			if(e.target
 			&& e.target.id === id 
 			&& document.querySelector("#" + id).closest("#__popup")){
-	         	REQ.closePopup();
+				REQ.closePopup();
 				callback();
-		     }
-		 });
+			}
+		});
 	},
 }
 

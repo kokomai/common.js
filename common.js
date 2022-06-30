@@ -39,7 +39,7 @@
             return obj;
         }
     },
-    // 비어있는 값인지 체크
+    // 값이 들어있는지 체크
     // 공백, null, undefined, {}, []이 아닐시, true 리턴
     isNotEmpty : function(obj) {
     	if(!obj
@@ -54,6 +54,22 @@
         } else {
             return true;
         }
+    },
+	// 비어있는 값인지 체크
+	isEmpty : function(obj) {
+        if(!obj || obj === undefined || obj === null)  {
+            return true;
+        }
+
+        if(Array.isArray(obj) && obj.length === 0) {
+            return true;
+        } else if(typeof obj === 'string' && this.replaceAll(obj, " ", "") === "") {
+            return true;
+        } else if(typeof obj === 'object' && Object.keys(obj).length === 0) {
+            return true;
+        }
+
+        return false;
     }, 
     // replaceAll 구현
     // str : 원본 문자열
@@ -716,6 +732,41 @@ const FORM = {
 }
 
 const DATE = {
+	getNowDateUrl : "/common/getNowDate",
+	getNowTimeUrl : "/common//getNowTime",
+	getNowDateTimeUrl : "/common//getNowDateTime",
+    // 현재 서버 날짜 가져오기
+    // params : 구분자 ("-", ".")
+    getNowServerDate : function(str) {
+		let request = new XMLHttpRequest();
+		request.open('POST', this.getNowDateUrl, false);  // false : 동기로 동작
+		request.send(str);
+		
+		if (request.status === 200) {
+			return request.responseText;
+		}
+    },
+    // 현재 서버 시간 가져오기
+    getNowServerTime : function() {
+		let request = new XMLHttpRequest();
+		request.open('POST', this.getNowTimeUrl, false);  // false : 동기로 동작
+		request.send();
+		
+		if (request.status === 200) {
+			return request.responseText;
+		}
+    },
+    // 현재 서버 날짜 및 시간가져오기
+    // params : 구분자 ("-", ".")
+    getNowServerDateTime : function(str) {
+		let request = new XMLHttpRequest();
+		request.open('POST', this.getNowDateTimeUrl, false);  // false : 동기로 동작
+		request.send(str);
+		
+		if (request.status === 200) {
+			return request.responseText;
+		}
+    },
     // 현재 날짜 가져오기
     // params : 구분자 ("-", ".")
     getNowDate : function(str) {
