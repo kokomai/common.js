@@ -111,6 +111,16 @@
 		if(isLoading) {
 			REQ.loading();
 		}
+	    	
+	    	let paramsKeys = Object.keys(params);
+
+		for(let key of paramsKeys) {
+			if(!url.includes('?')) {
+				url = url + '?' + key + '=' +params[key];
+			} else {
+				url = url + '&' + key + '=' + params[key];
+			}
+		}
 		
         try {
 			return fetch(
