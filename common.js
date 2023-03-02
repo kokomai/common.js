@@ -470,32 +470,34 @@
 			input.removeEventListener("input", COMM._typeFunc);
 		});
 		
+		document.querySelectorAll("input[data-Ftype]").forEach((input) => {
+			input.removeEventListener("keydown", COMM._typeFunc_keydown);
+		});
+		
 		COMM["_typeFunc"] = (e) => {
-			let val = e.target.value.replace("'", "").replace("\\", "");
 			let keyData = "";
-			if(e.data) {
-				keyData = e.data.replace("'", "").replace("\\", "");
+			
+			if(e.data !== null) {
+				keyData = e.data;
 			}
+			
 			let check = new Function("return " + e.target.getAttribute("data-Ftype") + "('" + keyData +"')");
-			if(!check()) {
-				let position = e.target.selectionStart;
-				let formedL = val.replace(keyData, "").length;
-				let originL = val.length;
-				
-				e.target.value = val.replace(keyData, "");
-				if(keyData) {
-					if(originL !== formedL) {
-						e.target.setSelectionRange(position-1, position-1);
-					} else {
-						e.target.setSelectionRange(position, position);
-					}	
-				}
-			} 
+			if(!check() && keyData !== "") {
+				e.target.value = COMM["_typeFunc_beforeValue"];
+			}
+		}
+		
+		COMM["_typeFunc_keydown"] = (e) => {
+			COMM["_typeFunc_beforeValue"] = e.target.value;
 		}
 		
 		document.querySelectorAll("input[data-Ftype]").forEach((input) => {
 			input.addEventListener("input", COMM._typeFunc);
-		})
+		});
+		
+		document.querySelectorAll("input[data-Ftype]").forEach((input) => {
+			input.addEventListener("keydown", COMM._typeFunc_keydown);
+		});
 	},
 	// 접속한 device가 모바일인지 아닌지 체크
 	isMobile : function() {
