@@ -478,7 +478,7 @@
 			let keyData = "";
 			
 			if(e.data !== null) {
-				keyData = e.data;
+				keyData = e.data.replace("\\", "\\\\").replace("'", "\\'");;
 			}
 			
 			let check = new Function("return " + e.target.getAttribute("data-Ftype") + "('" + keyData +"')");
