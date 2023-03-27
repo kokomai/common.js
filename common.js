@@ -93,9 +93,9 @@
 		}
 		
 		if(isShow) {
-			// document.getElementById("__loading").style.display = "block";
+			document.getElementById("__loading").style.display = "block";
 		} else {
-			// document.getElementById("__loading").style.display = "none";
+			document.getElementById("__loading").style.display = "none";
 		}
 	},
 	// page 로딩을 계속 지속
