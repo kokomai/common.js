@@ -20,8 +20,8 @@
 	하지만 document가 준비 되기 전 특별히 실행해야할 사항들이 공통적으로 존재한다면
 	execute.js에서 실행하거나 binding 해주세요.
 */
-// https://jeonghwan-kim.github.io/dev/2020/06/08/html5-form-validation.html
-// -> html form 커스터마이징
+
+
 $(document).ready(function(){
 	/* 
 		아래와 같이 보기 편하게 하기 위해 함수 선언부와 
