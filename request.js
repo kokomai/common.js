@@ -63,12 +63,14 @@
 		options : {
 			url : 요청 url
 			params : 전달할 파라미터 ({})
+			async : true
+			    -> false 선택시 순차적으로 진행 (ajax 사용시)
 			success : 성공시 호출할 콜백 함수
 			error : 에러시 호출할 콜백 함수
 			noLoading : true
 				-> true 설정시, loading 없이 호출
 			keepLoading : true 
-				-> 여러번 비동기로 호출 시 앞서 호출한 요청이 loading을 가리지 않게 하기 
+				-> 여러번 비동기로 호출 시 앞서 호출한 요청이 loading을 가리지 않게 하기
 		}
 	*/
     get : function(options) {
@@ -82,6 +84,7 @@
 		};
 		let isLoading = true;
 		let isHideLoading = true;
+		let async = true;
 		
 		if(typeof options === "object") {
 			if(options.url) {
@@ -103,13 +106,23 @@
 				isHideLoading = !options.keepLoading
 			}
 			// ajax 사용시 활성화
-			// if (options.async != undefined || options.async != null) {
-			// 	async = options.async
-			// }
+			//  if (options.async != undefined || options.async != null) {
+			//  	async = options.async
+			//  }
 		}
 		
 		if(isLoading) {
 			REQ.loading();
+		}
+		
+		let paramsKeys = Object.keys(params);
+
+		for(let key of paramsKeys) {
+			if(!url.includes('?')) {
+				url = url + '?' + key + '=' +params[key];
+			} else {
+				url = url + '&' + key + '=' + params[key];
+			}
 		}
 		
         try {
@@ -122,7 +135,6 @@
 						"X-AUTH-RTOKEN" : REQ.getRToken(),
 						"X-AUTH-ATOKEN" : REQ.getAToken()
 					},
-					body: JSON.stringify(params)
 				}
 			).then((res) => {
 				REQ.setAToken(res.headers.get("X-AUTH-ATOKEN"));
@@ -139,34 +151,34 @@
 				}
 			});
 			/*
-				$.ajax({
-					url: url
-					, data: params
-					, type: "GET"
-					, async: async
-					, success: function(res, stat, req) {
-						successF(res, stat, req);
-
-						if (isHideLoading) {
-							REQ.loading(false);
-						}
+			$.ajax({
+				url: url
+				, data: params
+				, type: "GET"
+				, async: async
+				, success: function(res, stat, req) {
+					successF(res, stat, req);
+					
+					if (isHideLoading) {
+						REQ.loading(false);
 					}
-					, error: function(res) {
-						errorF(res);
-
-						if (res.status === 403) {
-							alert("세션이 끊겼습니다.");
-							location.href = "/";
-						}
-
-						if (isHideLoading) {
-							REQ.loading(false);
-						}
+				}
+				, error: function(res) {
+					errorF(res);
+					
+					if (res.status === 403) {
+						alert("세션이 끊겼습니다.");
+						location.href = "/";
 					}
-				});
+					
+					if (isHideLoading) {
+						REQ.loading(false);
+					}
+				}
+			});
 			*/
         } catch(e) {
-            console.error(e);
+			console.error(e);
         }
     },
     // post request
@@ -174,6 +186,8 @@
 		options : {
 			url : 요청 url
 			params : 전달할 파라미터 ({})
+			async : true
+			    -> false 선택시 순차적으로 진행 (ajax 사용시)
 			success : 성공시 호출할 콜백 함수
 			error : 에러시 호출할 콜백 함수
 			noLoading : true
