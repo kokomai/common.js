@@ -155,6 +155,7 @@
 				url: url
 				, data: params
 				, type: "GET"
+				, contentType: "application/json"
 				, async: async
 				, success: function(res, stat, req) {
 					successF(res, stat, req);
@@ -268,6 +269,7 @@
 					url: url
 					, data: params
 					, type: "POST"
+					, contentType: "application/json"
 					, async: async
 					, success: function(res, stat, req) {
 						successF(res, stat, req);
